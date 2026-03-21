@@ -46,10 +46,11 @@ if the build aborted prematurely.
 
 All build events form a directed acyclic graph through their parent and child
 relationship. Every build event except for the initial build event has one or
-more parent events. Please note that not all parent events of a child event must
-necessarily be posted before it. When a build is complete (succeeded or failed)
-all announced events will have been posted. In case of a Bazel crash or a failed
-network transport, some announced build events may never be posted.
+more parent events. BEP events are written respecting parent-child ordering
+constraints, so a parent event is always published before its child events.
+When a build is complete (succeeded or failed) all announced events will have
+been posted. In case of a Bazel crash or a failed network transport, some
+announced build events may never be posted.
 
 The event graph's structure reflects the lifecycle of a command. Every BEP
 graph has the following characteristic shape:
