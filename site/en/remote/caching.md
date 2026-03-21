@@ -288,6 +288,12 @@ domain socket:
 
 This feature is unsupported on Windows.
 
+## Chunked uploads and downloads (CDC) {:#remote-cache-cdc}
+
+Use the `--experimental_remote_cache_chunking` flag to read and write large
+blobs to and from the remote cache in chunks. This requires server-side support
+for content-defined chunking (CDC).
+
 ## Disk cache {:#disk-cache}
 
 Bazel can use a directory on the file system as a remote cache. This is
