@@ -6,7 +6,9 @@ Book: /_book.yaml
 {% include "_buttons.html" %}
 
 This page describes how to check your cache hit rate and how to investigate
-cache misses in the context of remote execution.
+cache misses in the context of remote execution. The following guide focuses on
+the action cache. Note that Bazel's remote repository cache, which stores outputs
+of fetching external dependencies, now supports all reproducible repository rules.
 
 This page assumes that you have a build and/or test that successfully
 utilizes remote execution, and you want to ensure that you are effectively
@@ -37,6 +39,8 @@ command.
 ## Troubleshooting cache hits {:#troubleshooting-cache-hits}
 
 If you are not getting the cache hit rate you are expecting, do the following:
+
+If your build handles large artifacts, you may need to enable chunking to avoid timeouts during upload or download. Use the `--experimental_remote_cache_chunking` flag to read and write large blobs in smaller chunks. This feature requires support from your remote cache server.
 
 ### Ensure re-running the same build/test command produces cache hits {:#rerun-cache-hits}
 

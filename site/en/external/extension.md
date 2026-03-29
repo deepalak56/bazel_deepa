@@ -93,7 +93,9 @@ specified using the specified attribute schema.
 The implementation function of module extensions are similar to those of repo
 rules, except that they get a [`module_ctx`](/rules/lib/builtins/module_ctx) object,
 which grants access to all modules using the extension and all pertinent tags.
-The implementation function then calls repo rules to generate repos.
+The implementation function then calls repo rules to generate repos. Each tag
+has an implicit `_sort_key` field. This can be compared across tags from
+different classes to derive their declaration order in the `MODULE.bazel` file.
 
 ```python
 # @rules_jvm_external//:extensions.bzl

@@ -37,6 +37,8 @@ strategy. Local cache hits are not included in this summary. If you are getting
 0 processes (or a number lower than expected), run `bazel clean` followed by
 your build/test command.
 
+The on-disk cache is one source of local cache hits. You can enable it by setting `--disk_cache` without an argument (or other boolean forms like `--disk_cache=1`) to use a default location at `<outputUserRoot>/cache/disk`, or by providing a custom path. Note that a hit in the local disk cache will prevent a remote cache lookup, which will affect your remote cache hit rate.
+
 ## Troubleshooting cache hits {:#troubleshooting-cache-hits}
 
 If you are not getting the cache hit rate you are expecting, do the following:

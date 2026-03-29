@@ -142,6 +142,8 @@ try-import-if-bazel-version ~1.2 %workspace%/configs/1.2_flags.rc
 try-import-if-bazel-version ~1 %workspace%/configs/v1_flags.rc
 ```
 
+Bazel limits recursive imports to a depth of 512. If this limit is exceeded, Bazel will fail with a "Maximum import depth exceeded parsing config file" error. You can disable this limit by setting the `BAZEL_UNLIMITED_IMPORT_DEPTH` environment variable to any value.
+
 Import precedence:
 
 -   Options in the imported file take precedence over options specified before
