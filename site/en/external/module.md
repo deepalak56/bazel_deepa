@@ -31,7 +31,10 @@ discovers the entire dependency graph.
 
 By default, Bazel then [selects](#version-selection) one version of each module
 to use. Bazel represents each module with a repo, and consults the registry
-again to learn how to define each of the repos.
+again to learn how to define each of the repos. The registry provides source
+information, including any necessary patches or overlays. For security, Bazel
+now enforces that integrity strings for these patches and overlays are
+non-empty.
 
 ## Version format {:#version-format}
 

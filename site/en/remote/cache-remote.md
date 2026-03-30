@@ -38,6 +38,8 @@ command.
 
 If you are not getting the cache hit rate you are expecting, do the following:
 
+Additionally, if your build involves very large artifacts, transferring them to and from the remote cache may fail. The `--experimental_remote_cache_chunking` flag enables reading and writing large blobs in smaller chunks, which can improve reliability. This feature requires support from your remote cache server.
+
 ### Ensure re-running the same build/test command produces cache hits {:#rerun-cache-hits}
 
 1. Run the build(s) and/or test(s) that you expect to populate the cache. The
@@ -57,8 +59,11 @@ If you are not getting the cache hit rate you are expecting, do the following:
    accessed. In that case, skip to the next section.
 
 5. A likely source of discrepancy is something non-hermetic in the build causing
-   the actions to receive different action keys across the two runs. To find
-   those actions, do the following:
+   the actions to receive different action keys across the two runs. This can
+   include repository rules that re-fetch sources on each run. The remote
+   repository contents cache helps mitigate this by storing fetched outputs; it
+   now supports all reproducible repository rules. To find those actions, do the
+   following:
 
    a. Re-run the build(s) or test(s) in question to obtain execution logs:
 
@@ -152,29 +157,3 @@ binary (`--execution_log_binary_file`) or JSON (`--execution_log_json_file`).
 The compact format is recommended, as it produces much smaller files with very
 little runtime overhead. The following instructions work for any format. You
 can also convert between them using the `//src/tools/execlog:converter` tool.
-
-To compare logs for two builds that are not sharing cache hits as expected,
-do the following:
-
-1. Get the execution logs from each build and store them as `/tmp/exec1.log` and
-   `/tmp/exec2.log`.
-
-2. Download the Bazel source code and build the `//src/tools/execlog:parser`
-   tool:
-
-       git clone https://github.com/bazelbuild/bazel.git
-       cd bazel
-       bazel build //src/tools/execlog:parser
-
-3. Use the `//src/tools/execlog:parser` tool to convert the logs into a
-   human-readable text format. In this format, the actions in the second log are
-   sorted to match the order in the first log, making a comparison easier.
-
-        bazel-bin/src/tools/execlog/parser \
-          --log_path=/tmp/exec1.log \
-          --log_path=/tmp/exec2.log \
-          --output_path=/tmp/exec1.log.txt \
-          --output_path=/tmp/exec2.log.txt
-
-4. Use your favourite text differ to diff `/tmp/exec1.log.txt` and
-   `/tmp/exec2.log.txt`.
