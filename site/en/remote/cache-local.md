@@ -33,7 +33,7 @@ following:
 
 This means that out of 7 attempted actions, 3 got a remote cache hit and 4
 actions did not have cache hits and were executed locally using `linux-sandbox`
-strategy. Local cache hits are not included in this summary. If you are getting
+strategy. Local cache hits are not included in this summary. You can enable a local disk cache by setting the `--disk_cache` flag. If set without an argument, it will use a default location at `<outputUserRoot>/cache/disk`. Other boolean forms (`--disk_cache=1` to enable; `--nodisk_cache` to disable) are also accepted. If you are getting
 0 processes (or a number lower than expected), run `bazel clean` followed by
 your build/test command.
 

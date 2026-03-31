@@ -88,7 +88,10 @@ maven = module_extension(
 ```
 
 These declarations show that `maven.install` and `maven.artifact` tags can be
-specified using the specified attribute schema.
+specified using the specified attribute schema. In addition to the defined
+attributes, each tag has an implicit `_sort_key` field. This field can be
+compared to derive the order in which tags from different classes appear in the
+`MODULE.bazel` file.
 
 The implementation function of module extensions are similar to those of repo
 rules, except that they get a [`module_ctx`](/rules/lib/builtins/module_ctx) object,

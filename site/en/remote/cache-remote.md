@@ -38,6 +38,17 @@ command.
 
 If you are not getting the cache hit rate you are expecting, do the following:
 
+Note that in addition to action results, Bazel can also cache the output of
+repository rules. The remote repository contents cache now supports all
+reproducible repository rules, which avoids re-fetching them on subsequent builds.
+If you are seeing repository rules being re-executed across machines or after
+`bazel clean`, ensure the rule definition is reproducible.
+
+For builds with large artifacts, you can use the `--experimental_remote_cache_chunking`
+flag to read and write blobs to and from the remote cache in chunks. This can
+help with issues related to uploading or downloading large artifacts. This
+feature requires that your remote cache server supports chunking.
+
 ### Ensure re-running the same build/test command produces cache hits {:#rerun-cache-hits}
 
 1. Run the build(s) and/or test(s) that you expect to populate the cache. The

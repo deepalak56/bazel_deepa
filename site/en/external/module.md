@@ -115,7 +115,8 @@ serves multiple purposes:
     specific registry, instead of following the normal [registry
     selection](/external/registry#selecting_registries) process.
 *   With the `patch*` attributes, you can specify a set of patches to apply to
-    the downloaded module.
+    the downloaded module. A non-empty integrity string must be provided for each
+    patch file.
 
 These attributes are all optional and can be mixed and matched with each other.
 
