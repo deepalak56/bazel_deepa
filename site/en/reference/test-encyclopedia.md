@@ -403,7 +403,7 @@ The initial environment block shall be composed as follows:
   </tr>
   <tr>
     <td><code>TEST_TMPDIR</code></td>
-    <td>absolute path to a private writable directory</td>
+<td>absolute path to a private writable directory. Each flaky test attempt gets a new directory.</td>
     <td>required</td>
   </tr>
   <tr>

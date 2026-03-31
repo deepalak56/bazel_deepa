@@ -15,6 +15,8 @@ maximum heap via the startup flag
 [`--host_jvm_args`](/docs/user-manual#host-jvm-args),
 like `--host_jvm_args=-Xmx2g`.
 
+Bazel also receives ongoing memory optimizations, such as reduced RAM usage for the remote analysis cache writer.
+
 ### Trade incremental build speeds for memory {:#trade-incremental}
 
 If your builds are too big, Bazel may throw an `OutOfMemoryError` (OOM) when
@@ -41,6 +43,8 @@ prevent most re-execution).
  * `--nokeep_state_after_build` will discard all data after the build, so that
  incremental builds have to build from scratch (except for the on-disk action
  cache). Alone, it does not affect the high-water mark of the current build.
+
+* `--experimental_skycache_minimize_memory` will reduce memory by clearing package data after analysis when using the remote analysis cache.
 
 ### Trade build flexibility for memory with Skyfocus (Experimental) {:#trade-flexibility}
 

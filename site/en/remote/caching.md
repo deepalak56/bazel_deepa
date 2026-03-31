@@ -39,6 +39,8 @@ Note that the remote cache additionally stores the stdout and stderr for every
 action. Inspecting the stdout/stderr of Bazel thus is not a good signal for
 [estimating cache hits](/remote/cache-local).
 
+Bazel can also cache analysis results remotely. This is an experimental feature controlled by the `--remote_analysis_cache` flag.
+
 ### How a build uses remote caching {:#remote-caching}
 
 Once a server is set up as the remote cache, you use the cache in multiple

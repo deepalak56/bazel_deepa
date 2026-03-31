@@ -36,6 +36,8 @@ Some caveats:
     This is due to performance implications of using these features with larger
     tests.
 
+*   Strive for hermetic tests. For complex toolchain interactions, you may need to explicitly control settings to avoid depending on the host environment.
+
 The basic principle is to define a testing rule that depends on the
 rule-under-test. This gives the testing rule access to the rule-under-test's
 providers.

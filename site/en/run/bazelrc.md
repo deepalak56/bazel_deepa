@@ -91,6 +91,8 @@ Lines that start with `import`, `try-import` or `try-import-if-bazel-version`
 are special: use these to load other "rc" files. To specify a path that is
 relative to the workspace root, write `import %workspace%/path/to/bazelrc`.
 
+Recursive imports are limited to a depth of 512. To disable this limit, set the `BAZEL_UNLIMITED_IMPORT_DEPTH` environment variable.
+
 The difference between the various import statements is as follows:
 
 *   `import` - Bazel will fail if the `imported`'ed file is missing (or can't be

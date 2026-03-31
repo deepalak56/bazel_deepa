@@ -24,6 +24,8 @@ The public version of the source code of Bazel lives on GitHub at
 [github.com/bazelbuild/bazel](http://github.com/bazelbuild/bazel). This is not
 the "source of truth"; it's derived from a Google-internal source tree that
 contains additional functionality that is not useful outside Google. The
+
+This also includes tests for Google-specific features.
 long-term goal is to make GitHub the source of truth.
 
 Contributions are accepted through the regular GitHub pull request mechanism,
@@ -204,6 +206,8 @@ Bazel learns about option classes in the following ways:
 Each option (excluding Starlark-defined options) is a member variable of a
 `FragmentOptions` subclass that has the `@Option` annotation, which specifies
 the name and the type of the command line option along with some help text.
+
+*   Note: Options are being migrated to use getters instead of direct field access.
 
 The Java type of the value of a command line option is usually something simple
 (a string, an integer, a Boolean, a label, etc.). However, we also support

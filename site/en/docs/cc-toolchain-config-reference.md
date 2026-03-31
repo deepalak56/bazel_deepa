@@ -428,6 +428,8 @@ within the same toolchain. This prevents ambiguity in tool paths
 and enforces the intention behind `action_config` - that an action's properties
 are clearly described in a single place in the toolchain.
 
+To ensure deterministic builds, Bazel processes `action_config` definitions in alphabetical order of the action name.
+
 ### Using tool constructor {:#using-tool-constructor}
 
 An`action_config` can specify a set of tools via its `tools` parameter.

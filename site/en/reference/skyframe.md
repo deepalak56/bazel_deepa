@@ -181,6 +181,8 @@ implementations Bazel uses to perform a build:
     `PackageValue` the corresponding target is in, the `ConfiguredTargetValues`
     of direct dependencies, and a special node representing the build
     configuration.
+
+Bazel can cache `ConfiguredTargetValue` nodes remotely to share analysis phase results across different builds.
 *   **ArtifactValue**. Represents a file in the build, be it a source or an
     output artifact. Artifacts are almost equivalent to files, and are used to
     refer to files during the actual execution of build steps. Source files

@@ -56,6 +56,8 @@ If you are not getting the cache hit rate you are expecting, do the following:
    `remote cache hit` and `internal`, then your cache is being correctly populated and
    accessed. In that case, skip to the next section.
 
+
+Another source of cache misses can be non-reproducible repository rules. The remote repository cache now supports all reproducible repository rules.
 5. A likely source of discrepancy is something non-hermetic in the build causing
    the actions to receive different action keys across the two runs. To find
    those actions, do the following:
@@ -109,6 +111,8 @@ If you are not getting the cache hit rate you are expecting, do the following:
       set to `false`: either at the command line or in a
       [bazelrc](/run/bazelrc#bazelrc-file-locations) file.
 
+
+For builds with large artifacts, failed transfers can cause cache misses. Use the `--experimental_remote_cache_chunking` flag to enable chunked transfers, which requires server support.
 ### Ensure caching across machines {:#caching-across-machines}
 
 After cache hits are happening as expected on the same machine, run the
