@@ -109,6 +109,11 @@ def _maven_impl(ctx):
       artifacts += install.artifacts
     artifacts += [_to_artifact(artifact) for artifact in mod.tags.artifact]
 
+
+Contains the tags for the current module extension. This object has a field for each tag
+class, with the value being a list of tag instances. Each tag instance has a field for each
+attribute of the tag class, plus an implicit `_sort_key` field. The `_sort_key` can be
+compared to derive the order in which tags from different classes appear in the `MODULE.bazel` file.
   # call out to the coursier CLI tool to resolve dependencies
   output = ctx.execute(["coursier", "resolve", artifacts])
   repo_attrs = _process_coursier_output(output)

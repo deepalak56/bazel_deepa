@@ -11,6 +11,11 @@ This page assumes that you have a build and/or test that successfully
 utilizes remote execution, and you want to ensure that you are effectively
 utilizing remote cache.
 
+The remote repository contents cache (`--experimental_remote_repo_contents_cache`)
+now supports all reproducible repository rules. This includes rules that
+dynamically discover their inputs during execution, rather than declaring them
+statically.
+
 ## Checking your cache hit rate {#check-cache-hits}
 
 In the standard output of your Bazel run, look at the `INFO` line that lists

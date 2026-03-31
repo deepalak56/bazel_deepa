@@ -118,6 +118,11 @@ def _maven_impl(ctx):
   _generate_hub_repo(name = "maven", repo_attrs)
 ```
 
+Contains the tags for the current module extension. This object has a field for each tag
+class, with the value being a list of tag instances. Each tag instance has a field for each
+attribute of the tag class, plus an implicit `_sort_key` field. The `_sort_key` can be
+compared to derive the order in which tags from different classes appear in the `MODULE.bazel` file.
+
 ### Extension identity
 
 Module extensions are identified by the name and the `.bzl` file that appears
