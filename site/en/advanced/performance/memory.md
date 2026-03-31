@@ -34,6 +34,11 @@ You can also pass any one of these flags individually:
 analysis). Incremental builds will not have to redo package loading, but will
 have to redo analysis and execution (although the on-disk action cache can
 prevent most re-execution).
+
+ * `--experimental_skycache_minimize_memory` reduces memory by clearing package
+   data after analysis. This forces the next incremental build to reload
+   packages, but allows for the reuse of analysis results from a cache,
+   avoiding re-analysis.
  * `--notrack_incremental_state` will not store any edges in Bazel's internal
  dependency graph, so that it is unusable for incremental builds. The next build
  will discard that data, but it is preserved until then, for internal debugging,

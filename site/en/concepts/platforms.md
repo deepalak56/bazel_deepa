@@ -126,6 +126,11 @@ plus fair warning for project owners to test against upcoming changes.
 
 This is why this is an ongoing migration.
 
+
+In addition to migrating individual language rules, Bazel's core platform
+APIs are also continuously refined. This work improves performance and
+maintainability, ensuring a robust and efficient foundation for all
+platform-based builds.
 ### Goal {:#goal}
 
 This migration is complete when all projects build with the form:

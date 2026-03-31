@@ -119,6 +119,9 @@ serves multiple purposes:
 
 These attributes are all optional and can be mixed and matched with each other.
 
+
+To ensure build reproducibility and security, Bazel requires non-empty integrity checksums for all externally downloaded files, including source archives, patches, and overlay files. For modules from a registry, these are specified in the registry's metadata. When using overrides, you may need to specify the checksums yourself.
+
 ### Multiple-version override
 
 A [`multiple_version_override`](/rules/lib/globals/module#multiple_version_override)

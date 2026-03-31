@@ -46,6 +46,10 @@ if the build aborted prematurely.
 
 All build events form a directed acyclic graph through their parent and child
 relationship. Every build event except for the initial build event has one or
+more parent events, and parent events are guaranteed to be posted before their
+children. When a build is complete (succeeded or failed), all announced events
+will have been posted, unless Bazel crashes or the network transport fails.
+relationship. Every build event except for the initial build event has one or
 more parent events. Please note that not all parent events of a child event must
 necessarily be posted before it. When a build is complete (succeeded or failed)
 all announced events will have been posted. In case of a Bazel crash or a failed

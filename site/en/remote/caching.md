@@ -24,6 +24,11 @@ action outputs. These outputs consist of a list of output file names and the
 hashes of their contents. With a remote cache, you can reuse build outputs
 from another user's build rather than building each new output locally.
 
+
+In addition to caching action outputs, Bazel also supports an experimental
+feature for caching the results of the analysis phase itself. This is known as
+remote analysis caching and is controlled by separate flags. This document
+focuses on the more common remote action caching.
 To use remote caching:
 
 * Set up a server as the cache's backend

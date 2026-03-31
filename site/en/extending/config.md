@@ -552,7 +552,10 @@ for how to read these keys.
 
 [End to end example](https://github.com/bazelbuild/examples/tree/HEAD/configurations/transition_on_native_flag){: .external}
 
-Starlark transitions can also declare reads and writes on native build
+Starlark transitions can also declare reads and writes on native command-line
+options (the ones defined in Bazel's underlying Java code). To access these
+options, use the special prefix `//command_line_option:` followed by the
+option name.
 configuration options via a special prefix to the option name.
 
 ```python

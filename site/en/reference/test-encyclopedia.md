@@ -647,6 +647,12 @@ Tests should create files only within the directories specified by
 
 These directories will be initially empty.
 
+
+For tests that are run multiple times, for example with the
+`--flaky_test_attempts` flag, each attempt is guaranteed to receive a
+different, empty directory. This ensures that state from a previous failed
+run does not interfere with a subsequent attempt.
+
 Tests must not attempt to remove, chmod, or otherwise alter these directories.
 
 These directories may be a symbolic links.

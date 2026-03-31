@@ -207,6 +207,11 @@ For instructions for Windows, see [Bootstrap Bazel on Windows](#bootstrap-window
 
 *   **JDK.** Version 21 is required.
 
+    The bootstrap script is designed to work reliably with any standard JDK 21.
+    It explicitly manages the Java compilation process, including annotation
+    processors, to avoid potential incompatibilities across different compiler
+    versions.
+
 *   **Python**. Version 3 is required.
 
 For example on Ubuntu Linux you can install these requirements using the

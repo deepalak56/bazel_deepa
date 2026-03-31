@@ -41,6 +41,11 @@ your build/test command.
 
 If you are not getting the cache hit rate you are expecting, do the following:
 
+As a first step, try using the local on-disk cache to check if your build is
+cacheable. Enable it by adding the `--disk_cache` flag, which uses a default
+location. If you get local cache hits but no remote hits, the issue is likely
+with your remote cache setup, such as network or configuration problems.
+
 ### Ensure successful communication with the remote endpoint {:#remote-endpoint-success}
 
 To ensure your build is successfully communicating with the remote cache, follow

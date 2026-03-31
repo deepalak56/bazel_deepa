@@ -146,6 +146,23 @@ Each record describes both the inputs (not only files, but also command line
 arguments, environment variables, etc) and the outputs of the action. Thus,
 examination of the log can reveal why an action was reexecuted.
 
+
+Recent improvements to Bazel's remote caching functionality have reduced
+memory usage, particularly when writing to the remote analysis cache. This
+can lead to more stable and performant builds for large projects, making the
+debugging process described here more reliable.
+
+
+The logic for managing the remote analysis cache has also been refactored for improved stability. This change separates the construction of the cache manager from its core functionality, making the caching of analysis results more reliable. This helps prevent unnecessary re-analysis phases in large builds, contributing to overall performance and consistency.
+
+
+Additionally, the remote repository cache now supports all reproducible
+repository rules, including those with dynamic inputs. This enhancement
+ensures more reliable caching of external dependencies, reducing unnecessary
+refetches and contributing to faster, more hermetic builds.
+
+
+To improve performance when transferring large artifacts, you can enable remote cache chunking. The `--experimental_remote_cache_chunking` flag allows Bazel to read and write large blobs in smaller chunks. This can be particularly beneficial for users with slow network connections or when dealing with very large build outputs. Note that this feature requires that your remote cache implementation supports chunking.
 The execution log can be produced in one of three formats:
 compact (`--execution_log_compact_file`),
 binary (`--execution_log_binary_file`) or JSON (`--execution_log_json_file`).

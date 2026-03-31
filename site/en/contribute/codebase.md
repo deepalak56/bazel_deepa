@@ -203,6 +203,10 @@ Bazel learns about option classes in the following ways:
 
 Each option (excluding Starlark-defined options) is a member variable of a
 `FragmentOptions` subclass that has the `@Option` annotation, which specifies
+the name, type, and help text. While these have historically been public fields,
+they are being refactored to use getters to improve encapsulation and prevent
+the subtle bugs mentioned in the warning above.
+`FragmentOptions` subclass that has the `@Option` annotation, which specifies
 the name and the type of the command line option along with some help text.
 
 The Java type of the value of a command line option is usually something simple
@@ -1634,6 +1638,11 @@ ones that only run the analysis phase. We call the former "integration tests"
 and the latter "unit tests", although they are more like integration tests that
 are, well, less integrated. We also have some actual unit tests, where they are
 necessary.
+
+The test suite in the public GitHub repository is comprehensive. However, it
+does not include tests for Google-specific functionality. These tests are
+maintained in Google's internal source tree and are not part of the open-source
+distribution.
 
 Of integration tests, we have two kinds:
 

@@ -101,6 +101,13 @@ The difference between the various import statements is as follows:
     condition on the current Bazel version is checked before attempting to do
     the import. See below for the syntax.
 
+
+To prevent infinite recursion, Bazel limits the recursive depth of `import`
+statements to 512. If this limit is exceeded, Bazel errors with "Maximum
+import depth exceeded". If your configuration genuinely requires a deeper import
+chain, you can disable this limit by setting the `BAZEL_UNLIMITED_IMPORT_DEPTH`
+environment variable to any value.
+
 Conditional Bazel version imports can be useful if a project needs to work under
 several Bazel versions or during the transition from one Bazel version to
 another. Different flags may be needed for different Bazel versions since flags
