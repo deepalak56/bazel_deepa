@@ -37,6 +37,8 @@ strategy. Local cache hits are not included in this summary. If you are getting
 0 processes (or a number lower than expected), run `bazel clean` followed by
 your build/test command.
 
+To enable a shared, local disk cache, use the `--disk_cache` flag. If you provide no path, Bazel uses a default location under the output user root (`<outputUserRoot>/cache/disk`). You can also use boolean forms like `--disk_cache=1` to enable it or `--nodisk_cache` to disable it.
+
 ## Troubleshooting cache hits {:#troubleshooting-cache-hits}
 
 If you are not getting the cache hit rate you are expecting, do the following:

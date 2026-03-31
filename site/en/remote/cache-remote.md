@@ -38,6 +38,10 @@ command.
 
 If you are not getting the cache hit rate you are expecting, do the following:
 
+In addition to caching action results, Bazel also caches the results of repository rule fetches. The remote repository contents cache now supports all reproducible repository rules, which can significantly speed up clean builds. If you find repository rules are being re-fetched, ensure they are not marked as non-reproducible (for example, with `reproducible = False` in the rule's definition).
+
+If your build involves very large artifacts, you might experience timeouts during upload or download from the remote cache. The `--experimental_remote_cache_chunking` flag can help by enabling reading and writing large blobs in smaller chunks. This feature requires support from your remote cache server.
+
 ### Ensure re-running the same build/test command produces cache hits {:#rerun-cache-hits}
 
 1. Run the build(s) and/or test(s) that you expect to populate the cache. The

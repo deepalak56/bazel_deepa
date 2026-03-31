@@ -118,6 +118,10 @@ serves multiple purposes:
     the downloaded module.
 
 These attributes are all optional and can be mixed and matched with each other.
+In addition to user-specified patches, Bazel also applies patches defined in a
+module's metadata from the registry. For improved security, Bazel now requires
+non-empty integrity strings for these registry-provided patches and overlay
+files.
 
 ### Multiple-version override
 
