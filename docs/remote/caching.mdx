@@ -287,6 +287,8 @@ domain socket:
 
 This feature is unsupported on Windows.
 
+
+*   **API Change**: The public `mode` field in `RemoteAnalysisCachingOptions` is now private. Use the `getMode()` accessor instead.
 ## Disk cache {#disk-cache}
 
 Bazel can use a directory on the file system as a remote cache. This is

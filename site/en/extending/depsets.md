@@ -341,6 +341,8 @@ occurs.
 
 For more information about using depsets efficiently, see the [performance](/rules/performance) page.
 
+*   Improved performance of environment constraint checking by optimizing internal data structures for `environment_group` fulfillers.
+
 ## API Reference
 
 Please see [here](/rules/lib/builtins/depset) for more details.

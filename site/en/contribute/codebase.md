@@ -91,6 +91,12 @@ communicate with the server is in `src/main/protobuf/command_server.proto` .
 The main entry point of the server is `BlazeRuntime.main()` and the gRPC calls
 from the client are handled by `CommandServer.serveAndAwaitTermination()`.
 
+
+*   The bootstrap script now explicitly enables required annotation processors during compilation. This improves bootstrap reliability across different JDK versions.
+
+*   Internal API Change: Direct field access on `BuildRequestOptions` and `BlazeServerStartupOptions` is replaced by getter and setter methods.
+
+*   Options classes can now be wrapped to provide getters and setters for accessing their fields.
 ## Directory layout {:#directory-layout}
 
 Bazel creates a somewhat complicated set of directories during a build. A full

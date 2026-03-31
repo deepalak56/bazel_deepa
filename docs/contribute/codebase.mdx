@@ -65,6 +65,8 @@ following steps:
 3.  If needed, kills the old server process
 4.  If needed, starts up a new server process
 
+
+*   The bootstrap script now explicitly enables required annotation processors during compilation. This improves bootstrap reliability across different JDK versions.
 After a suitable server process is ready, the command that needs to be run is
 communicated to it over a gRPC interface, then the output of Bazel is piped back
 to the terminal. Only one command can be running at the same time. This is
@@ -214,6 +216,12 @@ Each option (excluding Starlark-defined options) is a member variable of an
 `OptionsBase` subclass that has the `@Option` annotation, which specifies
 the name and the type of the command line option along with some help text.
 
+
+*   The `MethodOptionDefinition.getDeclaringClass()` method is now implemented. It correctly returns the `OptionsBase` subclass that declares the option.
+
+
+*   Options classes can now be wrapped to provide getters and setters for accessing their fields.
+*   Internal API Change: Direct field access on `BuildRequestOptions` and `BlazeServerStartupOptions` is replaced by getter and setter methods.
 The Java type of the value of a command line option is usually something simple
 (a string, an integer, a Boolean, a label, etc.). However, we also support
 options of more complicated types; in this case, the job of converting from the

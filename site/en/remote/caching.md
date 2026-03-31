@@ -357,6 +357,8 @@ On the server side, Bazel maintains an in-memory state which speeds up builds.
 When running builds inside docker containers such as in CI, the in-memory state is lost
 and Bazel must rebuild it before using the remote cache.
 
+
+*   **API Change**: The public `mode` field in `RemoteAnalysisCachingOptions` is now private. Use the `getMode()` accessor instead.
 ## External links {:#external-links}
 
 * **Your Build in a Datacenter:** The Bazel team gave a [talk](https://fosdem.org/2018/schedule/event/datacenter_build/){: .external} about remote caching and execution at FOSDEM 2018.

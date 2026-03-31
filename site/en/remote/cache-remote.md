@@ -178,3 +178,5 @@ do the following:
 
 4. Use your favourite text differ to diff `/tmp/exec1.log.txt` and
    `/tmp/exec2.log.txt`.
+
+*   The remote repository cache (`--experimental_remote_repo_cache`) now supports all reproducible repository rules, including those that dynamically discover their inputs.
