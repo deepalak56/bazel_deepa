@@ -387,6 +387,8 @@ config_setting(
 )
 ```
 
+`config_setting` can also match against native flags, for example `flag_values = { "--cpu": "arm" }`.
+
 ## User-defined transitions {:#user-defined-transitions}
 
 A configuration

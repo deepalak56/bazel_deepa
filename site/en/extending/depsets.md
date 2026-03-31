@@ -33,6 +33,8 @@ Each target in a dependency chain can add its own contents on top of the
 previous without having to read or copy them.
 
 Each node in the DAG holds a list of direct elements and a list of child nodes.
+
+*   **Note:** The depset's internal DAG structure is an implementation detail and is not guaranteed. Bazel may flatten depsets internally for efficiency.
 The contents of the depset are the transitive elements, such as the direct elements
 of all the nodes. A new depset can be created using the
 [depset](/rules/lib/globals/bzl#depset) constructor: it accepts a list of direct

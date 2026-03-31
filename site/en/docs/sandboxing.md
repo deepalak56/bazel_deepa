@@ -61,6 +61,8 @@ The `local` (a.k.a. `standalone`) strategy does not do any kind of sandboxing.
 It simply executes the action's command line with the working directory set to
 the execroot of your workspace.
 
+*   When rerunning flaky tests, this strategy creates a new temporary directory for each attempt.
+
 `processwrapper-sandbox` is a sandboxing strategy that does not require any
 "advanced" features - it should work on any POSIX system out of the box. It
 builds a sandbox directory consisting of symlinks that point to the original

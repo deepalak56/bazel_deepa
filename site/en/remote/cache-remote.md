@@ -12,6 +12,12 @@ This page assumes that you have a build and/or test that successfully
 utilizes remote execution, and you want to ensure that you are effectively
 utilizing remote cache.
 
+Note: The remote repository contents cache (separate from the action cache) now supports all reproducible repo rules.
+
+
+Note: Bazel can read and write large blobs to the remote cache in chunks via the `--experimental_remote_cache_chunking` flag. This requires server support.
+
+Note: Besides the action cache, Bazel also supports a remote analysis cache to reuse analysis results across machines. Enable it with `--experimental_remote_analysis_cache`.
 ## Checking your cache hit rate {:#check-cache-hits}
 
 In the standard output of your Bazel run, look at the `INFO` line that lists

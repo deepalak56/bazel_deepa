@@ -119,6 +119,8 @@ def _maven_impl(ctx):
   _generate_hub_repo(name = "maven", repo_attrs)
 ```
 
+*   Tags have an implicit `_sort_key` field that can be compared to derive the order in which tags from different classes appear in the `MODULE.bazel` file.
+
 ### Extension identity
 
 Module extensions are identified by the name and the `.bzl` file that appears

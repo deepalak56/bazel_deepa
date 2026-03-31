@@ -192,6 +192,8 @@ to debug. Unfortunately, making them actually immutable is a large endeavor.
 gets a chance to keep a reference to it and before `equals()` or `hashCode()` is
 called on it is okay.)
 
+As a step towards making them immutable, direct field access is gradually being replaced by getter methods.
+
 Bazel learns about option classes in the following ways:
 
 1.  Some are hard-wired into Bazel (`CommonCommandOptions`)

@@ -33,6 +33,8 @@ By default, Bazel then [selects](#version-selection) one version of each module
 to use. Bazel represents each module with a repo, and consults the registry
 again to learn how to define each of the repos.
 
+Note: Bazel now requires non-empty integrity strings for patches and overlays provided by a registry.
+
 ## Version format {:#version-format}
 
 Bazel has a diverse ecosystem and projects use various versioning schemes. The

@@ -35,6 +35,8 @@ The remote cache stores two types of data:
 * The action cache, which is a map of action hashes to action result metadata.
 * A content-addressable store (CAS) of output files.
 
+
+* An analysis cache, which stores analysis-phase results (configured targets).
 Note that the remote cache additionally stores the stdout and stderr for every
 action. Inspecting the stdout/stderr of Bazel thus is not a good signal for
 [estimating cache hits](/remote/cache-local).

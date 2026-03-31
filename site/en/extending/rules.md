@@ -839,6 +839,8 @@ If you see references to "host" in code or old documentation, that's what this
 refers to. We recommend using Bazel 6.0 or newer to avoid this extra conceptual
 overhead.
 
+An attribute's default can also be derived from a configuration option using [`configuration_field`](/rules/lib/toplevel/attr#configuration_field). This allows rules to be sensitive to command-line flags.
+
 <a name="fragments"></a>
 
 ### Configuration fragments
