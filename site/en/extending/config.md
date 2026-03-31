@@ -567,6 +567,8 @@ cpu_transition = transition(
     outputs = ["//command_line_option:cpu"]
 ```
 
+Note: Not all native flags are transitionable. The set of supported flags is limited and expected to grow over time.
+
 #### Unsupported native options {:#unsupported-native-options}
 
 Bazel doesn't support transitioning on `--define` with

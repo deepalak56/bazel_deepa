@@ -37,6 +37,8 @@ strategy. Local cache hits are not included in this summary. If you are getting
 0 processes (or a number lower than expected), run `bazel clean` followed by
 your build/test command.
 
+Local cache hits can come from the on-disk cache, enabled with the `--disk_cache` flag. You can now use this flag without a path to use a default cache location.
+
 ## Troubleshooting cache hits {:#troubleshooting-cache-hits}
 
 If you are not getting the cache hit rate you are expecting, do the following:

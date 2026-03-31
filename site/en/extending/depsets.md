@@ -333,6 +333,9 @@ Generally speaking, depsets should be used whenever you are accumulating
 information through your transitive dependencies. This helps ensure that
 your build scales well as your target graph grows deeper.
 
+*   **Note**: For small or non-transitive collections, a list or dict may be more
+    performant than a depset due to lower overhead.
+
 Finally, it’s important to not retrieve the contents of the depset
 unnecessarily in rule implementations. One call to `to_list()`
 at the end in a binary rule is fine, since the overall cost is just O(n). It’s

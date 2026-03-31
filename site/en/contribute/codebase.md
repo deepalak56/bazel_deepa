@@ -24,7 +24,7 @@ The public version of the source code of Bazel lives on GitHub at
 [github.com/bazelbuild/bazel](http://github.com/bazelbuild/bazel). This is not
 the "source of truth"; it's derived from a Google-internal source tree that
 contains additional functionality that is not useful outside Google. The
-long-term goal is to make GitHub the source of truth.
+long-term goal is to make GitHub the source of truth. The internal tree also contains tests for this Google-specific functionality.
 
 Contributions are accepted through the regular GitHub pull request mechanism,
 and manually imported by a Googler into the internal source tree, then
@@ -191,6 +191,8 @@ to debug. Unfortunately, making them actually immutable is a large endeavor.
 (Modifying a `FragmentOptions` immediately after construction before anyone else
 gets a chance to keep a reference to it and before `equals()` or `hashCode()` is
 called on it is okay.)
+
+As a step towards making them immutable, direct field access is being replaced by getters and setters.
 
 Bazel learns about option classes in the following ways:
 

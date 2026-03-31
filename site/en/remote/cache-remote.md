@@ -115,6 +115,12 @@ After cache hits are happening as expected on the same machine, run the
 same build(s)/test(s) on a different machine. If you suspect that caching is
 not happening across machines, do the following:
 
+
+* The remote repository contents cache (`--experimental_remote_repo_cache`) now supports all reproducible repository rules, which can improve cross-machine caching for external dependencies.
+
+* Use `--experimental_remote_cache_chunking` to read and write large blobs in chunks. This can improve caching for large artifacts but requires server-side support.
+
+* To cache analysis results, use `--experimental_remote_analysis_cache`. This can speed up large builds by avoiding re-analysis of unchanged portions of the build.
 1. Make a small modification to your build to avoid hitting existing caches.
 
 2. Run the build on the first machine:

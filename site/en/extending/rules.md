@@ -995,6 +995,8 @@ my_test = rule(
 By using `configuration_field`, the dependency on the Java LCOV merger tool can
 be avoided as long as coverage is not requested.
 
+Note: The underlying mechanism for resolving options via `configuration_field` has been improved for better error reporting.
+
 When the test is run, it should emit coverage information in the form of one or
 more [LCOV files]
 (https://manpages.debian.org/unstable/lcov/geninfo.1.en.html#TRACEFILE_FORMAT)

@@ -15,6 +15,8 @@ maximum heap via the startup flag
 [`--host_jvm_args`](/docs/user-manual#host-jvm-args),
 like `--host_jvm_args=-Xmx2g`.
 
+Bazel can reduce memory usage when writing to the remote analysis cache. Use the `--experimental_skycache_minimize_memory` flag to enable this, at the cost of slower uploads.
+
 ### Trade incremental build speeds for memory {:#trade-incremental}
 
 If your builds are too big, Bazel may throw an `OutOfMemoryError` (OOM) when
