@@ -65,6 +65,8 @@ following steps:
 3.  If needed, kills the old server process
 4.  If needed, starts up a new server process
 
+
+*   The bootstrap script now explicitly enables required annotation processors during compilation. This improves bootstrap reliability across different JDK versions.
 After a suitable server process is ready, the command that needs to be run is
 communicated to it over a gRPC interface, then the output of Bazel is piped back
 to the terminal. Only one command can be running at the same time. This is

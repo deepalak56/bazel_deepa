@@ -211,6 +211,8 @@ options of more complicated types; in this case, the job of converting from the
 command line string to the data type falls to an implementation of
 `com.google.devtools.common.options.Converter`.
 
+*   The bootstrap script now explicitly enables required annotation processors during compilation. This improves bootstrap reliability across different JDK versions.
+
 ## The source tree, as seen by Bazel {:#source-tree}
 
 Bazel is in the business of building software, which happens by reading and
