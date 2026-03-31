@@ -36,7 +36,7 @@ command.
 
 ## Troubleshooting cache hits {:#troubleshooting-cache-hits}
 
-If you are not getting the cache hit rate you are expecting, do the following:
+If you are not getting the cache hit rate you are expecting, do the following. Keep in mind that in addition to the action cache, Bazel also caches repository rule outputs. A miss in the repository cache can cause downstream action cache misses. The remote repository cache now supports all reproducible repository rules, which helps avoid these misses if your rules are written to be reproducible.
 
 ### Ensure re-running the same build/test command produces cache hits {:#rerun-cache-hits}
 
@@ -138,6 +138,10 @@ not happening across machines, do the following:
     runs. If the logs are not identical, investigate your build configurations
     for discrepancies as well as properties from the host environment leaking
     into either of the builds.
+
+### Handling large files {:#handling-large-files}
+
+If your build involves very large files, you might encounter timeouts or failures when uploading or downloading them from the remote cache. To mitigate this, you can enable chunking, which splits large blobs into smaller pieces for transfer. Enable this feature with the `--experimental_remote_cache_chunking` flag. This requires your remote cache server to support chunked transfers.
 
 ## Comparing the execution logs {:#compare-logs}
 

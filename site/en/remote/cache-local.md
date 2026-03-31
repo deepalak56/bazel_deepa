@@ -41,6 +41,8 @@ your build/test command.
 
 If you are not getting the cache hit rate you are expecting, do the following:
 
+Bazel supports a local on-disk cache which can be used in addition to the remote cache. To enable it, specify a path with `--disk_cache=/path/to/cache`. You can also enable it without an argument (`--disk_cache`) to use a default location at `<outputUserRoot>/cache/disk`. Use `--nodisk_cache` to disable it.
+
 ### Ensure successful communication with the remote endpoint {:#remote-endpoint-success}
 
 To ensure your build is successfully communicating with the remote cache, follow

@@ -90,18 +90,18 @@ field, which defaults to `archive`.
     *   `mirror_urls`: A list of string, the mirror URLs of the source archive.
         The URLs are tried in order after `url` as backups.
     *   `integrity`: A string, the [Subresource
-        Integrity][subresource-integrity] checksum of the archive
+        Integrity][subresource-integrity] checksum of the archive. This string must not be empty.
     *   `strip_prefix`: A string, the directory prefix to strip when extracting
         the source archive
     *   `overlay`: A JSON object containing overlay files to layer on top of the
         extracted archive. The patch files are located under the
         `/modules/$MODULE/$VERSION/overlay` directory. The keys are the
-        overlay file names, and the values are the integrity checksum of
+        overlay file names, and the values are the non-empty integrity checksums of
         the overlay files. The overlays are applied before the patch files.
     *   `patches`: A JSON object containing patch files to apply to the
         extracted archive. The patch files are located under the
         `/modules/$MODULE/$VERSION/patches` directory. The keys are the
-        patch file names, and the values are the integrity checksum of
+        patch file names, and the values are the non-empty integrity checksums of
         the patch files. The patches are applied after the overlay files and in
         the order they appear in `patches`.
     *   `patch_strip`: A number; the same as the `--strip` argument of Unix
