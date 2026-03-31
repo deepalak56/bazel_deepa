@@ -12,6 +12,10 @@ This page assumes that you have a build and/or test that successfully
 utilizes remote execution, and you want to ensure that you are effectively
 utilizing remote cache.
 
+
+*   **API Change**: The public `mode` field in `RemoteAnalysisCachingOptions` is now private. Use the `getMode()` accessor instead.
+
+*   The remote repository contents cache now supports repository rules with dynamic inputs, enabling it for all reproducible repository rules.
 ## Checking your cache hit rate {:#check-cache-hits}
 
 In the standard output of your Bazel run, look at the `INFO` line that lists

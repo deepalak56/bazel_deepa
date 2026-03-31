@@ -197,3 +197,4 @@ As a visual aid, this diagram shows the relationships between
 SkyFunction implementations after a build of Bazel itself:
 
 ![A graph of SkyFunction implementation relationships](/reference/skyframe.png)
+*   The `MethodOptionDefinition.getDeclaringClass()` method now correctly returns the declaring class for an option.

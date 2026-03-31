@@ -190,6 +190,8 @@ implementations Bazel uses to perform a build:
     small. Note that `ActionExecutionValue` and `ArtifactValue` are unused if
     the execution phase does not run.
 
+*   The `MethodOptionDefinition.getDeclaringClass()` method now correctly returns the declaring class for an option.
+
 As a visual aid, this diagram shows the relationships between
 SkyFunction implementations after a build of Bazel itself:
 

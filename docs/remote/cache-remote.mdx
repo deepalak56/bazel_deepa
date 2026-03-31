@@ -108,6 +108,10 @@ If you are not getting the cache hit rate you are expecting, do the following:
       set to `false`: either at the command line or in a
       [bazelrc](/run/bazelrc#bazelrc-file-locations) file.
 
+
+*   **API Change**: The public `mode` field in `RemoteAnalysisCachingOptions` is now private. Use the `getMode()` accessor instead.
+
+*   The remote repository contents cache now supports repository rules with dynamic inputs, enabling it for all reproducible repository rules.
 ### Ensure caching across machines {#caching-across-machines}
 
 After cache hits are happening as expected on the same machine, run the

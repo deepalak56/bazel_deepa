@@ -95,6 +95,8 @@ rules, except that they get a [`module_ctx`](/rules/lib/builtins/module_ctx) obj
 which grants access to all modules using the extension and all pertinent tags.
 The implementation function then calls repo rules to generate repos.
 
+*   Module extension tags now have an implicit `_sort_key` field. This integer reflects the tag's declaration order in the `MODULE.bazel` file, allowing for deterministic sorting.
+
 ```python
 # @rules_jvm_external//:extensions.bzl
 
