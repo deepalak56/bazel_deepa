@@ -240,6 +240,8 @@ Note that `analysistest.target_actions(env)` returns a list of
 [`Action`](lib/Action) objects which represent actions registered by the
 target under test.
 
+* You can inspect the `argv` field of an `Action` to verify the command-line arguments of tools invoked by the action.
+
 ### Verifying rule behavior under different flags {#verifying-rule-behavior}
 
 You may want to verify your real rule behaves a certain way given certain build

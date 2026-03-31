@@ -241,6 +241,8 @@ Note that `analysistest.target_actions(env)` returns a list of
 [`Action`](lib/Action) objects which represent actions registered by the
 target under test.
 
+*   Note: For complex actions like Java compilation, you may need to verify that tools like annotation processors are correctly configured and invoked.
+
 ### Verifying rule behavior under different flags {:#verifying-rule-behavior}
 
 You may want to verify your real rule behaves a certain way given certain build
