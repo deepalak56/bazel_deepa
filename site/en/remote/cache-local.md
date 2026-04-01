@@ -90,3 +90,8 @@ the steps in this section.
       machines](/remote/cache-remote#caching-across-machines),
       to ensure caching from your cache-writing Bazel invocation to your
       cache-reading Bazel invocation.
+
+The `--disk_cache` flag can now be used without an argument to enable caching
+at a default location under the output user root (`<outputUserRoot>/cache/disk`).
+The flag also accepts boolean values (`--disk_cache=1`, `--nodisk_cache`) to
+explicitly enable or disable the feature.

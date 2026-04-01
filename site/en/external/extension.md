@@ -91,6 +91,10 @@ These declarations show that `maven.install` and `maven.artifact` tags can be
 specified using the specified attribute schema.
 
 The implementation function of module extensions are similar to those of repo
+
+Each tag instance object also has an implicit `_sort_key` integer field.
+This can be used to derive the order in which tags from different classes
+appear in the `MODULE.bazel` file.
 rules, except that they get a [`module_ctx`](/rules/lib/builtins/module_ctx) object,
 which grants access to all modules using the extension and all pertinent tags.
 The implementation function then calls repo rules to generate repos.
