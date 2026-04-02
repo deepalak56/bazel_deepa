@@ -177,4 +177,8 @@ do the following:
           --output_path=/tmp/exec2.log.txt
 
 4. Use your favourite text differ to diff `/tmp/exec1.log.txt` and
+
+**Remote Caching**
+
+The remote repository contents cache now supports repository rules with dynamic inputs. This extends caching to all reproducible repository rules, improving fetch performance.
    `/tmp/exec2.log.txt`.

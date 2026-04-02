@@ -200,6 +200,10 @@ override_repo(java_toolchains, remote_java_tools = "my_java_tools")
 #### Example: Patch a Go dependency to depend on `@zlib` instead of the system zlib
 
 ```python
+
+Each tag instance object now has an implicit `_sort_key` integer field.
+Its value reflects the tag's declaration order in the `MODULE.bazel` file.
+This allows sorting tags from different classes into their original order.
 # MODULE.bazel
 bazel_dep(name = "gazelle", version = "0.38.0")
 bazel_dep(name = "zlib", version = "1.3.1.bcr.3")

@@ -14,6 +14,10 @@ typing `bazel help query` or `bazel help cquery` on the
 command line.
 
 To execute a query while ignoring errors such as missing targets, use the
+
+`bazel query` now supports the `--output:display_full_kind` option.
+When enabled, the full path to the `.bzl` file is displayed for Starlark rule kinds.
+This affects the `label_kind`, `location`, and `xml` output formats.
 `--keep_going` flag.
 
 ## Finding the dependencies of a rule {#finding-rule-dependencies}

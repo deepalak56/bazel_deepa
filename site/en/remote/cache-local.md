@@ -32,6 +32,11 @@ following:
 ```
 
 This means that out of 7 attempted actions, 3 got a remote cache hit and 4
+
+The `--disk_cache` flag can now be used without an argument to enable the disk
+cache at a default location (`<outputUserRoot>/cache/disk`). Other boolean forms
+are also accepted, such as `--disk_cache=1` to enable and `--nodisk_cache` to
+disable.
 actions did not have cache hits and were executed locally using `linux-sandbox`
 strategy. Local cache hits are not included in this summary. If you are getting
 0 processes (or a number lower than expected), run `bazel clean` followed by
