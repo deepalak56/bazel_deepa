@@ -310,3 +310,8 @@ To avoid this, either remove the ability to set the repository name directly,
 or only allow the root module to do so. It's OK to allow the root module this
 ability because nothing will depend on it, so it doesn't have to worry about
 another module creating a conflicting name.
+
+Each tag instance object now has an implicit `_sort_key` integer field.
+This field reflects the tag's declaration order in the `MODULE.bazel` file.
+It can be used to sort a combined list of tags from different classes
+back into their original order.

@@ -129,6 +129,11 @@ bazel query 'foo/...' --output package
 
 #### What rules are defined in the `foo` package? {#rules-defined-in-foo}
 
+**Query**: Added the `--output:display_full_kind` flag. When enabled, the full
+path to a Starlark rule's definition is displayed as its kind (e.g.,
+`//pkg:def.bzl%my_rule`). This affects the `label_kind`, `location`, and `xml`
+output formats.
+
 ```
 bazel query 'kind(rule, foo:*)' --output label_kind
 ```

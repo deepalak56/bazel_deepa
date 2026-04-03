@@ -76,6 +76,10 @@ specific commit identifier instead of a floating branch that was originally
 specified.
 
 The input parameter `repository_ctx` can be used to access attribute values, and
+
+The struct returned by `ctx.download` on failure (`success: False`) now
+includes an `error` field. This field contains a string providing details
+about why the download failed.
 non-hermetic functions (finding a binary, executing a binary, creating a file in
 the repository or downloading a file from the Internet). See [the API
 docs](/rules/lib/builtins/repository_ctx) for more context. Example:
@@ -160,3 +164,7 @@ definition has the `configure` attribute set, use `bazel fetch --force
 -   [rules_jvm_external](https://github.com/bazelbuild/rules_jvm_external)
     creates an external repository called `@maven` by default that generates
     build targets for every Maven artifact in the transitive dependency tree.
+The remote repository contents cache (`--experimental_remote_repo_contents_cache`)
+now supports all reproducible repository rules. This enables caching for rules
+that discover their inputs dynamically during execution, improving performance
+for more complex repository definitions.
