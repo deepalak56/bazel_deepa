@@ -304,3 +304,6 @@ to Bzlmod.
     (original Bzlmod design doc)
 *   [BazelCon 2021 talk on Bzlmod](https://www.youtube.com/watch?v=TxOCKtU39Fs)
 *   [Bazel Community Day talk on Bzlmod](https://www.youtube.com/watch?v=MB6xxis9gWI)
+
+
+*   The host operating system and CPU architecture. This ensures that platform-dependent repository rules are correctly re-evaluated when switching between platforms, as they can access this information via `repository_ctx.os`.

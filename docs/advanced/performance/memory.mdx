@@ -95,3 +95,6 @@ Bazel comes with a built-in memory profiler that can help you check your rule’
 memory use. Read more about this process on the
 [Memory Profiling section](/rules/performance#memory-profiling) of our
 documentation on how to improve the performance of custom rules.
+
+
+*   `--experimental_skycache_minimize_memory` reduces memory usage by more aggressively clearing analysis data from the Skyframe graph. This may slightly slow down subsequent incremental builds but can be beneficial for memory-constrained environments.

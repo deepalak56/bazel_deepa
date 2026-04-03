@@ -92,6 +92,13 @@ used as a remote cache for Bazel. On Debian and Ubuntu you can install the
 `nginx-extras` package. On macOS nginx is available via Homebrew:
 
 ```posix-terminal
+
+
+You can also run `build --disk_cache` with no value to use a default location
+under your [output user root](/reference/user-manual#output-user-root)
+(`<outputUserRoot>/cache/disk`), alongside the repository cache.
+Use `build --nodisk_cache` to disable the disk cache explicitly.
+
 brew tap denji/nginx
 
 brew install nginx-full --with-webdav

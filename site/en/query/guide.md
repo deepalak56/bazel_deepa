@@ -316,3 +316,7 @@ y that it depends on. Use `maxrank`:
 
 The result indicates that there exist paths of length 85 that must occur in
 order in this build.
+
+
+
+For Starlark rules, the output is normally `<rule name> rule`. With the flag `--output:display_full_kind`, the full path to the rule definition is displayed instead, such as `//build_defs:my_rule.bzl:my_rule rule`. This also affects the `location` and `xml` output formats.

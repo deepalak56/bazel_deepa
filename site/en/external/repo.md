@@ -160,3 +160,5 @@ definition has the `configure` attribute set, use `bazel fetch --force
 -   [rules_jvm_external](https://github.com/bazelbuild/rules_jvm_external)
     creates an external repository called `@maven` by default that generates
     build targets for every Maven artifact in the transitive dependency tree.
+
+Returns a struct containing `success` (a boolean that is `True` if the download succeeded) and `sha256` (the sha256 hash of the downloaded file). If `success` is `False`, the struct contains an additional `error` field with a string describing why the download failed.
