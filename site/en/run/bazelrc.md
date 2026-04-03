@@ -317,3 +317,7 @@ Each bazelrc file listed here has a corresponding flag which can be used to
 disable them (e.g. `--nosystem_rc`, `--noworkspace_rc`, `--nohome_rc`). You can
 also make Bazel ignore all bazelrcs by passing the `--ignore_all_rc_files`
 startup option.
+
+
+
+Bazel enforces a limit on the recursive depth of `import` statements, which defaults to 512. If this limit is exceeded, you will receive a "Maximum import depth exceeded parsing config file" error. For configurations that require a deeper import chain, you can disable this limit by setting the `BAZEL_UNLIMITED_IMPORT_DEPTH` environment variable to any value.

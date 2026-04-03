@@ -310,3 +310,7 @@ To avoid this, either remove the ability to set the repository name directly,
 or only allow the root module to do so. It's OK to allow the root module this
 ability because nothing will depend on it, so it doesn't have to worry about
 another module creating a conflicting name.
+
+
+
+Each tag object also has an implicit `_sort_key` field. This field contains an opaque, comparable value that can be used to determine the order in which tags appear in the `MODULE.bazel` file, even across different tag classes.
