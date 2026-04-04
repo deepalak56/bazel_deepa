@@ -371,3 +371,9 @@ bazel query 'deps(//foo-tests)' --output maxrank | tail -1
 
 The result indicates that there exist paths of length 85 that must occur in
 order in this build.
+
+
+...
+```
+
+For Starlark rules, the kind is the rule name. To display the full label of the `.bzl` file where the rule is defined (e.g., `//pkg:rules.bzl%my_rule` instead of `my_rule`), add the `--output:display_full_kind` flag. This flag also affects the `location` and `xml` output formats.

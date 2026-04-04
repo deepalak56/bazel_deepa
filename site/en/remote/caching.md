@@ -297,6 +297,14 @@ Enable the disk cache as follows:
 
 ```posix-terminal
 build --disk_cache={{ '<var>' }}path/to/build/cache{{ '</var>' }}
+
+```
+
+You can also run `build --disk_cache` with no value to use a default location
+under your [output user root](/reference/user-manual#output-user-root)
+(`<outputUserRoot>/cache/disk`), alongside the repository cache.
+Use `build --nodisk_cache` to disable the disk cache explicitly.
+
 ```
 
 You can also run `build --disk_cache` with no value to use a default location

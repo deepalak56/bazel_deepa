@@ -383,3 +383,11 @@ in which he benchmarks remote caching in Bazel.
 * [issue #4558](https://github.com/bazelbuild/bazel/issues/4558)
 * [Application Authentication](https://cloud.google.com/docs/authentication/production)
 * [NativeLink](https://github.com/TraceMachina/nativelink)
+
+
+```
+
+You can also run `build --disk_cache` with no value to use a default location
+under your [output user root](/reference/user-manual#output-user-root)
+(`<outputUserRoot>/cache/disk`), alongside the repository cache.
+Use `build --nodisk_cache` to disable the disk cache explicitly.
