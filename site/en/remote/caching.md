@@ -384,3 +384,6 @@ in which he benchmarks remote caching in Bazel.
 * [issue #4558](https://github.com/bazelbuild/bazel/issues/4558){: .external}
 * [Application Authentication](https://cloud.google.com/docs/authentication/production){: .external}
 * [NativeLink](https://github.com/TraceMachina/nativelink){: .external}
+
+
+Additionally, symlinks from external repositories are correctly materialized on the local machine when their content is prefetched from the remote cache for use as action inputs.

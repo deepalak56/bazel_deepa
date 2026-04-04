@@ -558,3 +558,6 @@ to your build command.
  </table>
 </body>
 </html>
+
+| `--ios_simulator_version` | The iOS simulator version to use when running on the simulator. |
+| `--ios_simulator_device` | The type of device to simulate (for example, 'iPhone 6'). |

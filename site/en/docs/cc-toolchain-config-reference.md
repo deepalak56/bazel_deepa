@@ -1158,3 +1158,6 @@ done. For the curious reader see the implementation in
 and for production toolchains consider adding `no_legacy_features` to make
 the toolchain more standalone.
 
+
+
+*   `path_mapping` (optional string): If set, Bazel will apply path mapping to all paths in flags expanded from this feature. This is useful for normalizing paths for remote execution.

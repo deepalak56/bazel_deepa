@@ -177,3 +177,6 @@ do the following:
 
 4. Use your favourite text differ to diff `/tmp/exec1.log.txt` and
    `/tmp/exec2.log.txt`.
+
+
+To improve performance with large artifacts, you can enable remote cache chunking with the `--experimental_remote_cache_chunking` flag. This allows Bazel to upload and download large blobs in smaller chunks. Note that your remote cache server must support this feature.

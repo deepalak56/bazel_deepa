@@ -267,3 +267,6 @@ For more information on persistent workers, see:
     w/ Asana](https://www.youtube.com/watch?v=0pgERydGyqo){: .external}
 *   [Bazel strategies explained](https://jmmv.dev/2019/12/bazel-strategies.html){: .external}
 *   [Informative worker strategy discussion on the bazel-discuss mailing list](https://groups.google.com/forum/#!msg/bazel-discuss/oAEnuhYOPm8/ol7hf4KWJgAJ){: .external}
+
+
+* A flag that affects Starlark semantics changes. For example, `--incompatible_always_check_depset_elements`.

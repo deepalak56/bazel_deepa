@@ -160,3 +160,5 @@ definition has the `configure` attribute set, use `bazel fetch --force
 -   [rules_jvm_external](https://github.com/bazelbuild/rules_jvm_external)
     creates an external repository called `@maven` by default that generates
     build targets for every Maven artifact in the transitive dependency tree.
+
+The values of `os.name` and `os.arch` from the `repository_ctx.os` struct are implicitly included in the inputs for the repository rule. This means Bazel automatically re-fetches the repository if the host operating system or architecture changes, ensuring platform-specific dependencies are correctly resolved.

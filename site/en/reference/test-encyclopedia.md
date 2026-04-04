@@ -819,3 +819,6 @@ The runfiles directory contains the following:
     The destination of the symlink is the OutputFileName() of the OutputFile or
     CommandRule, expressed as an absolute path. Thus, the destination of the
     symlink might be `$(WORKSPACE)/linux-dbg/deps/server/42/server`.
+
+
+Note: Environment variables specified via the `env` attribute or the `--test_env` flag take precedence over variables set by Bazel's code coverage tooling.

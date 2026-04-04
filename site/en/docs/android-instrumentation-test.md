@@ -579,3 +579,6 @@ adb shell pm list
 packages com.example.android.testing | cut -d ':' -f 2 | tr -d '\r' | xargs
 -L1 -t adb uninstall
 ```
+
+
+Note: When running instrumentation tests, Bazel automatically merges the manifest of the test APK with the manifest of the app under test. This behavior is not configurable.

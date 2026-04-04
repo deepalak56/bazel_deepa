@@ -421,3 +421,6 @@ projects](https://github.com/bazelbuild/bazel/tree/master/examples){: .external}
 If you are interested in details about how Bazel builds Python targets on
 Windows, check out this [design
 doc](https://github.com/bazelbuild/bazel-website/blob/master/designs/_posts/2016-09-05-build-python-on-windows.md){: .external}.
+
+
+Bazel's internal artifact management and C++ include scanning are aware of Windows' case-insensitive file system. This helps prevent errors when the casing of an `#include` path differs from its declaration in a `BUILD` file. However, for cross-platform compatibility, it is still best practice to maintain consistent casing.
