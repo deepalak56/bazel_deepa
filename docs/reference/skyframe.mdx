@@ -194,3 +194,7 @@ As a visual aid, this diagram shows the relationships between
 SkyFunction implementations after a build of Bazel itself:
 
 ![A graph of SkyFunction implementation relationships](/reference/skyframe.png)
+
+
+
+This cache invalidation is also sensitive to changes in Starlark semantics. If you change a Starlark semantics flag (for example, an `--incompatible_*` flag), Bazel invalidates the relevant cached analysis results and triggers a new analysis.

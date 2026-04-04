@@ -421,3 +421,6 @@ projects](https://github.com/bazelbuild/bazel/tree/master/examples):
 If you are interested in details about how Bazel builds Python targets on
 Windows, check out this [design
 doc](https://github.com/bazelbuild/bazel-website/blob/master/designs/_posts/2016-09-05-build-python-on-windows.md).
+
+
+While Bazel is internally case-sensitive, it is aware of Windows' case-insensitivity in key areas. For example, the C++ include scanner correctly handles case-insensitive header paths to align with the file system's behavior.

@@ -1158,3 +1158,8 @@ done. For the curious reader see the implementation in
 and for production toolchains consider adding `no_legacy_features` to make
 the toolchain more standalone.
 
+
+
+`flag_group(flags, expand_if_available, expand_if_not_available, expand_if_true, expand_if_false, expand_if_equal, map_paths=False)`
+
+The `map_paths` parameter, when true, causes paths in variables (for example, `\%{source_file}`) to be remapped to their corresponding location in a sandbox.

@@ -316,3 +316,9 @@ y that it depends on. Use `maxrank`:
 
 The result indicates that there exist paths of length 85 that must occur in
 order in this build.
+
+
+
+When using `label_kind`, you can also specify the `--[no]display_full_kind` flag.
+If this flag is enabled, for rules defined in a `.bzl` file, the kind is prefixed
+with the full label of the `.bzl` file that defines it. For example: `//pkg:rules.bzl%my_rule`.

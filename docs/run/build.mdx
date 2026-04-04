@@ -699,3 +699,8 @@ the majority of its time, ranging from a few seconds to over an hour for a large
 build. Errors reported during this phase include: missing source files, errors
 in a tool executed by some build action, or failure of a tool to produce the
 expected set of outputs.
+
+
+
+
+Note: If a post-build task, such as uploading to the Build Event Service (BES), fails, `bazel run` will still execute the target. However, the final exit code of the `bazel` process will be non-zero to reflect the task failure.
