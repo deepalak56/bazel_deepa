@@ -316,3 +316,7 @@ y that it depends on. Use `maxrank`:
 
 The result indicates that there exist paths of length 85 that must occur in
 order in this build.
+
+
+
+When using `--output=label_kind`, you can also add the `--display_full_kind` flag. This will display the full path for Starlark rule kinds, for example `//build_defs:my_rule.bzl%my_rule rule` instead of just `my_rule rule`.

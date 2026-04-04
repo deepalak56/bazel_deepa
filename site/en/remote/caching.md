@@ -384,3 +384,8 @@ in which he benchmarks remote caching in Bazel.
 * [issue #4558](https://github.com/bazelbuild/bazel/issues/4558){: .external}
 * [Application Authentication](https://cloud.google.com/docs/authentication/production){: .external}
 * [NativeLink](https://github.com/TraceMachina/nativelink){: .external}
+
+
+
+With the experimental remote analysis cache, the cache key includes the Bazel version, the top-level configuration, and the Starlark semantics options. This ensures that changes to Starlark-affecting flags (such as `--incompatible_*` flags) correctly invalidate cached analysis results.
+

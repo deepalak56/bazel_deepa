@@ -1072,3 +1072,7 @@ done. For the curious reader see the implementation in
 and for production toolchains consider adding `no_legacy_features` to make
 the toolchain more standalone.
 
+
+
+
+When path mapping is enabled (for example, via `--experimental_path_mapping`), variables that expand to a path are automatically remapped. This allows features that reference artifacts in their flags (such as `per_object_debug_info_file`) to work correctly in remote and docker environments.

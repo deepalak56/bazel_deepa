@@ -177,3 +177,7 @@ do the following:
 
 4. Use your favourite text differ to diff `/tmp/exec1.log.txt` and
    `/tmp/exec2.log.txt`.
+
+
+
+For workspaces with large artifacts, you can enable chunked transfers to the remote cache, which can help avoid timeouts. Enable this feature with the `--experimental_remote_cache_chunking` flag. This requires your remote cache server to support chunking.

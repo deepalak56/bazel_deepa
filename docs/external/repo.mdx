@@ -63,6 +63,10 @@ the canonical repo name.
 
 ## Implementation function
 
+
+The `repository_ctx.os` field provides information about the host system. Bazel automatically includes the OS name and architecture from this field in the rule's fingerprint. This ensures the repository is correctly re-fetched if its logic depends on the host platform and the platform changes.
+
+
 Every repo rule requires an `implementation` function. It contains the actual
 logic of the rule and is executed strictly in the Loading Phase.
 
@@ -159,3 +163,7 @@ definition has the `configure` attribute set, use `bazel fetch --force
 -   [rules_jvm_external](https://github.com/bazelbuild/rules_jvm_external)
     creates an external repository called `@maven` by default that generates
     build targets for every Maven artifact in the transitive dependency tree.
+
+
+
+If the checksum does not match, the build will fail and the error message will include the checksum of the downloaded file, making it easy to update the expected value.

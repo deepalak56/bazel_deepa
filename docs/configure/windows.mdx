@@ -421,3 +421,7 @@ projects](https://github.com/bazelbuild/bazel/tree/master/examples):
 If you are interested in details about how Bazel builds Python targets on
 Windows, check out this [design
 doc](https://github.com/bazelbuild/bazel-website/blob/master/designs/_posts/2016-09-05-build-python-on-windows.md).
+
+
+
+- **Case-insensitivity:** Bazel handles file paths in a case-insensitive manner on Windows. This helps resolve issues with C++ includes where the casing in the `#include` directive might not exactly match the filename on disk.
