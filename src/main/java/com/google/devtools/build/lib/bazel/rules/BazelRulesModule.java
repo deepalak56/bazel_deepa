@@ -1308,6 +1308,16 @@ public final class BazelRulesModule extends BlazeModule {
         metadataTags = {OptionMetadataTag.DEPRECATED},
         help = "No-op.")
     public abstract Label getProtoToolchainForJ2Objc();
+
+    @Deprecated
+    @Option(
+        name = "incompatible_use_cc_configure_from_rules_cc",
+        defaultValue = "false",
+        documentationCategory = OptionDocumentationCategory.UNDOCUMENTED,
+        effectTags = {OptionEffectTag.NO_OP},
+        metadataTags = {OptionMetadataTag.DEPRECATED},
+        help = "No-op.")
+    public abstract boolean getIncompatibleUseCcConfigureFromRulesCc();
   }
 
   @Override
