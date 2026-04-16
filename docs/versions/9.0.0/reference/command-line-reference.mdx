@@ -789,6 +789,13 @@ This option affects semantics of the Starlark language or the build API accessib
     [`loading_and_analysis`](#effect_tag_LOADING_AND_ANALYSIS), [`incompatible_change`](#metadata_tag_INCOMPATIBLE_CHANGE)
 
 `--[no]incompatible_use_cc_configure_from_rules_cc` default: "false"
+<Warning>
+  **Deprecated and no-op.** This flag is now a no-op and will be removed in a future version.
+  `cc_configure` from `@bazel_tools` is no longer supported. Please use `cc_configure`
+  from `rules_cc` instead.
+</Warning>
+
+
 :   When true, Bazel will no longer allow using cc\_configure from @bazel\_tools. Please see https://github.com/bazelbuild/bazel/issues/10134 for details and migration instructions.
 
     Tags:
