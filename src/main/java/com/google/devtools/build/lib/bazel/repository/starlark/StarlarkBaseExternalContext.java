@@ -977,7 +977,8 @@ When <code>sha256</code> or <code>integrity</code> is user specified, setting an
                 be used to strip it from extracted files.
 
                 <p>For compatibility, this parameter may also be used under the deprecated name
-                <code>stripPrefix</code>.
+                <code>stripPrefix</code>. Only one of <code>strip_prefix</code> or
+                <code>strip_components</code> can be used.
                 """),
         @Param(
             name = "allow_fail",
@@ -1260,7 +1261,8 @@ the same path on case-insensitive filesystems.
                 used to strip it from extracted files.
 
                 <p>For compatibility, this parameter may also be used under the deprecated name
-                <code>stripPrefix</code>.
+                <code>stripPrefix</code>. Only one of <code>strip_prefix</code> or
+                <code>strip_components</code> can be used.
                 """),
         @Param(
             name = "rename_files",

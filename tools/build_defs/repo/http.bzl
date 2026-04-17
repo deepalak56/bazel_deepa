@@ -399,7 +399,7 @@ Note that if there are files outside of this directory, they will be
 discarded and inaccessible (e.g., a top-level license file). This includes
 files/directories that start with the prefix but are not in the directory
 (e.g., `foo-lib-1.2.3.release-notes`). If the specified prefix does not
-match a directory in the archive, Bazel will return an error.""",
+match a directory in the archive, Bazel will return an error.\n\nOnly one of `strip_prefix` and `strip_components` can be set.""",
     ),
     "add_prefix": attr.string(
         default = "",
