@@ -43,6 +43,15 @@ http_archive = repository_rule(
     attrs={
         "url": attr.string(mandatory=True),
         "sha256": attr.string(mandatory=True),
+
+
+        "strip_components": attr.int(
+            default=0,
+            doc="""
+Strip the given number of leading components from file paths on extraction.
+Only one of `strip_components` or `strip_prefix` can be set.
+"""
+        ),
     }
 )
 ```
