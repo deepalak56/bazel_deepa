@@ -80,6 +80,14 @@ non-hermetic functions (finding a binary, executing a binary, creating a file in
 the repository or downloading a file from the Internet). See [the API
 docs](/rules/lib/builtins/repository_ctx) for more context. Example:
 
+The input parameter `repository_ctx` can be used to access attribute values, and
+non-hermetic functions (finding a binary, executing a binary, creating a file in
+the repository or downloading a file from the Internet). Extraction functions
+like `repository_ctx.extract()` and `repository_ctx.download_and_extract()` now
+support a `strip_components` attribute, which is mutually exclusive with
+`strip_prefix`. See [the API docs](/rules/lib/builtins/repository_ctx) for more
+context. Example:
+
 ```python
 def _impl(repository_ctx):
   repository_ctx.symlink(repository_ctx.attr.path, "")
