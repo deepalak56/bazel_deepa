@@ -246,6 +246,12 @@ remote cache:
 build --remote_upload_local_results=false
 ```
 
+You can also specify an experimental remote output service endpoint. Note that this feature is a work-in-progress.
+
+```posix-terminal
+build --experimental_remote_output_service=grpc://your.host:port
+```
+
 ### Exclude specific targets from using the remote cache {#targets-remote-cache}
 
 To exclude specific targets from using the remote cache, tag the target with
