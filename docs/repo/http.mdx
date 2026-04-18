@@ -1,0 +1,53 @@
+---
+title: http_archive
+---
+
+The `http_archive` rule downloads a file over HTTP, extracts it, and makes its contents available as a Bazel repository.
+
+### name
+
+A unique name for this repository. All targets in this repository will be prefixed with `@<name>`.
+
+### urls
+
+A list of URLs. Bazel tries to download the file from these URLs, in order, until it succeeds. The first successfully downloaded file is used.
+
+### sha256
+
+The SHA256 sum of the file. This must match the SHA256 sum of the file downloaded from the URL. If it doesn't, Bazel will emit an error and print the correct SHA256 sum.
+
+### type
+
+The archive type. Currently, Bazel supports `zip`, `jar`, `gzip`, `bzip2`, `xz`, `tar`, `tar.gz`, `tar.bz2`, and `tar.xz`. If not specified, Bazel guesses the type from the URL's file extension.
+
+### strip_prefix
+
+A non-empty directory name to strip from the extracted files. It is an error if the archive does not contain a directory with this name as its prefix. For example, if you download a tarball and it contains a top-level directory `foo-1.2.3/`, you should set this to `foo-1.2.3` to extract the contents directly, without the top-level directory. Only one of `strip_prefix` or `strip_components` can be set.
+
+### strip_components
+
+An integer. Strip the given number of leading path segments from extracted files. For example, if set to `1`, the top-level directory will be removed. Only one of `strip_prefix` or `strip_components` can be set. Defaults to `0`.
+
+### patches
+
+A list of patch files that are applied to the extracted archive. The patches are applied in the order they appear in this list.
+
+### patch_args
+
+A list of strings passed as arguments to the patch command. By default, `-p0` is passed. If you need to use `-p1`, you can set `patch_args = ["-p1"]`.
+
+### patch_cmds
+
+A list of shell commands that are applied to the extracted archive after patches are applied. The commands are run in the order they appear in this list. These commands are run in the extracted directory, after stripping the prefix. You may use this to patch files that cannot be patched with the standard patch utility, for example to apply sed commands.
+
+### build_file
+
+The label of a file to use as the `BUILD` file for this repository. If not specified, Bazel looks for a `BUILD` file at the top level of the extracted archive.
+
+### build_file_content
+
+The content of a `BUILD` file to use for this repository. This can be used instead of `build_file` to specify the `BUILD` file content directly in the `WORKSPACE` file.
+
+### repo_mapping
+
+A dictionary of repository name to its canonical name. For example, `{'@foo': '@bar'}` means that all occurrences of `@foo` in this repository will be replaced with `@bar`. This is useful for resolving conflicts between transitive dependencies.
