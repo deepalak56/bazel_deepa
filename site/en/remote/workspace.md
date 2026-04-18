@@ -106,7 +106,9 @@ The actions that have been highlighted as potentially non-hermetic are as follow
   these may introduce any dependencies on the host environment.
 
 * `download`, `download_and_extract`: to ensure hermetic builds, make sure
-  that sha256 is specified
+  that sha256 is specified. The `download_and_extract` method now supports
+  `strip_components` for stripping leading path components. Note that
+  `strip_components` and `strip_prefix` cannot be used together.
 
 * `file`, `template`: this is not non-hermetic in itself, but may be a mechanism
   for introducing dependencies on the host environment into the repository.
