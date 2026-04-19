@@ -54,6 +54,7 @@ To access an attribute within the implementation function, use
 def _impl(repository_ctx):
     url = repository_ctx.attr.url
     checksum = repository_ctx.attr.sha256
+    strip_components = repository_ctx.attr.strip_components
 ```
 
 All `repository_rule`s have the implicitly defined attribute `name`. This is a
