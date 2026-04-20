@@ -400,6 +400,7 @@ start. Here are some more resources to continue learning with Bazel:
 
 *   To keep focusing on C++, read about common [C++ build use
     cases](https://bazel.build/tutorials/cpp-use-cases).
+*   For a simple, self-contained C++ example, see the [`hello-cli`](https://github.com/bazelbuild/examples/tree/main/cpp) target in the `bazelbuild/examples` repository.
 *   To get started with building other applications with Bazel, see the
     tutorials for [Java](https://bazel.build/start/java), [Android
     application](https://bazel.build/start/android-app), or [iOS
