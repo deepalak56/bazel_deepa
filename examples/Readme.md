@@ -5,3 +5,7 @@ This folder example is deprecated. In the future this folder will be deleted and
 
 *   **cpp/hello-cli:** A new command-line interface example.
     This target demonstrates automated documentation synchronization.
+
+
+*   **cpp/hello-cli:** A new command-line interface example.
+    This target demonstrates automated documentation synchronization.
