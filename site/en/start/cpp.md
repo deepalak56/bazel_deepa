@@ -409,4 +409,4 @@ start. Here are some more resources to continue learning with Bazel:
 *   To learn more about Bazel's other rules, see this [reference
     guide](https://bazel.build/rules).
 
-Happy building!
+Happy building!\n\n## Other C++ Examples {:#other-examples}\n\nThe `bazelbuild/examples` repository contains other C++ examples. For instance, the `examples/cpp/` directory contains a `hello-world` and a `hello-cli` example that demonstrate basic C++ targets.
