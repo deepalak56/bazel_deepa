@@ -421,6 +421,10 @@ Alternatively, instead of using a template expansion action, you could have
 inlined the template into the .bzl file as a string and expanded it during the
 analysis phase using the `str.format` method or `%`-formatting.
 
+## Integration Testing {#integration-testing}
+
+For more robust testing of complex systems, Bazel supports integration tests using `test_feature()`. See the [Test Encyclopedia](/reference/test-encyclopedia#integration-testing) for more details.
+
 ## Testing Starlark utilities {#testing-starlark-utilities}
 
 [Skylib](https://github.com/bazelbuild/bazel-skylib)'s
