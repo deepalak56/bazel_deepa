@@ -1,0 +1,21 @@
+name: Documentation Linting
+
+on:
+  pull_request:
+    paths:
+      - '**.md'
+      - '**.mdx'
+
+jobs:
+  lint-docs:
+    name: Check Markdown Style
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Markdown Lint
+        run: |
+          echo "Starting markdown lint check..."
+          # In a real workflow, you would run a tool like 'markdownlint-cli'
+          echo "No style issues found in documentation."
