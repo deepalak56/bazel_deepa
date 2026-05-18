@@ -273,3 +273,13 @@ public abstract class PlatformOptions extends FragmentOptions {
   }
 
 }
+
+  @Option(
+      name = "platform_in_output_dir_starlark_flags",
+      defaultValue = "null",
+      converter = CommaSeparatedOptionListConverter.class,
+      documentationCategory = OptionDocumentationCategory.UNCATEGORIZED,
+      effectTags = {OptionEffectTag.AFFECTS_OUTPUTS},
+      help = "Starlark flags that are set by platforms and should be included in the output directory name."
+  )
+  public List<String> platformInOutputDirStarlarkFlags;

@@ -119,7 +119,8 @@ The directories are laid out as follows:
                                               named by a mnemonic encoding the CPU and compilation mode
                                               (such as k8-fastbuild, k8-opt, or k8-dbg). Configurations
                                               with Starlark transitions append an ST-hash suffix
-                                              (such as k8-fastbuild-ST-abc123).
+                                              (such as k8-fastbuild-ST-abc123). Starlark flags set by platforms
+                                              can also be included if specified by --platform_in_output_dir_starlark_flags.
               bin/                        <== Bazel outputs binaries for target configuration here: $(BINDIR)
                 foo/bar/_objs/baz/        <== Object files for a cc_* rule named //foo/bar:baz
                   foo/bar/baz1.o          <== Object files from source //foo/bar:baz1.cc
