@@ -1,4 +1,5 @@
 load("@rules_java//java:defs.bzl", "java_library", "java_test")
+load("//src:java_opt_binary.bzl", "java_opt_binary")
 
 package(
     default_applicable_licenses = ["//:license"],
@@ -36,8 +37,8 @@ java_library(
         "//src/main/java/com/google/devtools/build/lib/actions:file_metadata",
         "//src/main/java/com/google/devtools/build/lib/remote:abstract_action_input_prefetcher",
         "//src/main/java/com/google/devtools/build/lib/remote/common:bulk_transfer_exception",
-        "//src/main/java/com/google/devtools/build/lib/remote/util",
-        "//src/main/java/com/google/devtools/build/lib/remote/util:digest_utils",
+        "//src/main/java/com/google/devtools/build/lib/remote/util:digest_util",
+        "//src/main/java/com/google/devtools/build/lib/remote/util:utils",
         "//src/main/java/com/google/devtools/build/lib/skyframe:tree_artifact_value",
         "//src/main/java/com/google/devtools/build/lib/testing/vfs:spied_filesystem",
         "//src/main/java/com/google/devtools/build/lib/util",
@@ -65,6 +66,7 @@ java_library(
             "RemoteActionFileSystemTestBase.java",
             "BuildWithoutTheBytesIntegrationTest.java",
             "BuildWithoutTheBytesIntegrationTestBase.java",
+            "ChunkedTransferBenchmark.java",
             "ChunkedCacheIntegrationTest.java",
             "ChunkedDiskCacheIntegrationTest.java",
             "DiskCacheIntegrationTest.java",
@@ -152,8 +154,10 @@ java_library(
         "//src/main/java/com/google/devtools/build/lib/remote/http",
         "//src/main/java/com/google/devtools/build/lib/remote/merkletree",
         "//src/main/java/com/google/devtools/build/lib/remote/options",
-        "//src/main/java/com/google/devtools/build/lib/remote/util",
-        "//src/main/java/com/google/devtools/build/lib/remote/util:digest_utils",
+        "//src/main/java/com/google/devtools/build/lib/remote/util:digest_output_stream",
+        "//src/main/java/com/google/devtools/build/lib/remote/util:digest_util",
+        "//src/main/java/com/google/devtools/build/lib/remote/util:tracing_metadata_utils",
+        "//src/main/java/com/google/devtools/build/lib/remote/util:utils",
         "//src/main/java/com/google/devtools/build/lib/runtime:blaze_command_cluster",
         "//src/main/java/com/google/devtools/build/lib/runtime:blaze_server_startup_options",
         "//src/main/java/com/google/devtools/build/lib/runtime:block_waiting_module",
@@ -251,6 +255,26 @@ java_test(
     ],
 )
 
+java_opt_binary(
+    name = "ChunkedTransferBenchmark",
+    srcs = ["ChunkedTransferBenchmark.java"],
+    main_class = "org.openjdk.jmh.Main",
+    deps = [
+        "//src/main/java/com/google/devtools/build/lib/clock",
+        "//src/main/java/com/google/devtools/build/lib/remote:combined_cache",
+        "//src/main/java/com/google/devtools/build/lib/remote:grpc_cache_client",
+        "//src/main/java/com/google/devtools/build/lib/remote/chunking",
+        "//src/main/java/com/google/devtools/build/lib/remote/common",
+        "//src/main/java/com/google/devtools/build/lib/remote/util:digest_util",
+        "//src/main/java/com/google/devtools/build/lib/vfs",
+        "//src/main/java/com/google/devtools/build/lib/vfs/inmemoryfs",
+        "//third_party:guava",
+        "//third_party:jmh",
+        "//third_party:mockito",
+        "@remoteapis//:build_bazel_remote_execution_v2_remote_execution_java_proto",
+    ],
+)
+
 java_library(
     name = "build_without_the_bytes_integration_test_base",
     srcs = [
@@ -294,7 +318,7 @@ java_test(
         "//src/main/java/com/google/devtools/build/lib/dynamic",
         "//src/main/java/com/google/devtools/build/lib/remote:remote_module",
         "//src/main/java/com/google/devtools/build/lib/remote/options",
-        "//src/main/java/com/google/devtools/build/lib/remote/util:digest_utils",
+        "//src/main/java/com/google/devtools/build/lib/remote/util:digest_util",
         "//src/main/java/com/google/devtools/build/lib/runtime:blaze_command_cluster",
         "//src/main/java/com/google/devtools/build/lib/runtime:block_waiting_module",
         "//src/main/java/com/google/devtools/build/lib/runtime:build_summary_stats_module",
@@ -323,7 +347,7 @@ java_test(
         "//src/main/java/com/google/devtools/build/lib/authandtls/credentialhelper:credential_module",
         "//src/main/java/com/google/devtools/build/lib/remote:remote_module",
         "//src/main/java/com/google/devtools/build/lib/remote/options",
-        "//src/main/java/com/google/devtools/build/lib/remote/util",
+        "//src/main/java/com/google/devtools/build/lib/remote/util:tracing_metadata_utils",
         "//src/main/java/com/google/devtools/build/lib/runtime:blaze_command_cluster",
         "//src/main/java/com/google/devtools/build/lib/runtime:block_waiting_module",
         "//src/main/java/com/google/devtools/build/lib/runtime:build_summary_stats_module",
@@ -384,7 +408,7 @@ java_test(
         "//src/main/java/com/google/devtools/build/lib/remote:remote_module",
         "//src/main/java/com/google/devtools/build/lib/remote:store",
         "//src/main/java/com/google/devtools/build/lib/remote/options",
-        "//src/main/java/com/google/devtools/build/lib/remote/util:digest_utils",
+        "//src/main/java/com/google/devtools/build/lib/remote/util:digest_util",
         "//src/main/java/com/google/devtools/build/lib/runtime:blaze_command_cluster",
         "//src/main/java/com/google/devtools/build/lib/runtime:block_waiting_module",
         "//src/main/java/com/google/devtools/build/lib/runtime:build_summary_stats_module",

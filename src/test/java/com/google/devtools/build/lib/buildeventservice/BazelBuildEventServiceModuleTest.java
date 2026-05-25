@@ -16,16 +16,20 @@ package com.google.devtools.build.lib.buildeventservice;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.TruthJUnit.assume;
 import static com.google.common.truth.extensions.proto.ProtoTruth.assertThat;
 import static com.google.devtools.build.lib.buildeventservice.BuildEventServiceModule.RUNS_PER_TEST_LIMIT;
 import static org.junit.Assert.assertThrows;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.google.devtools.build.lib.actions.ActionLookupData;
+import com.google.devtools.build.lib.analysis.util.AnalysisMock;
 import com.google.devtools.build.lib.authandtls.AuthAndTLSOptions;
 import com.google.devtools.build.lib.authandtls.credentialhelper.CredentialModule;
 import com.google.devtools.build.lib.bugreport.BugReport;
@@ -44,6 +48,10 @@ import com.google.devtools.build.lib.buildeventstream.BuildEventStreamProtos.Bui
 import com.google.devtools.build.lib.buildeventstream.BuildEventStreamProtos.BuildEventId.BuildFinishedId;
 import com.google.devtools.build.lib.buildeventstream.BuildEventStreamProtos.BuildEventId.ConfigurationId;
 import com.google.devtools.build.lib.buildeventstream.BuildEventStreamProtos.BuildEventId.TargetCompletedId;
+import com.google.devtools.build.lib.buildeventstream.BuildEventStreamProtos.BuildMetrics;
+import com.google.devtools.build.lib.buildeventstream.BuildEventStreamProtos.BuildMetrics.BuildGraphMetrics.StarlarkProviderStats.StalarkProvider;
+import com.google.devtools.build.lib.buildeventstream.BuildEventStreamProtos.BuildMetrics.BzlMetrics;
+import com.google.devtools.build.lib.buildeventstream.BuildEventStreamProtos.BuildMetrics.BzlMetrics.BzlFileMetrics;
 import com.google.devtools.build.lib.buildeventstream.BuildEventTransport;
 import com.google.devtools.build.lib.buildeventstream.transports.BinaryFormatFileTransport;
 import com.google.devtools.build.lib.buildeventstream.transports.JsonFormatFileTransport;
@@ -52,6 +60,7 @@ import com.google.devtools.build.lib.buildtool.util.BuildIntegrationTestCase;
 import com.google.devtools.build.lib.network.ConnectivityStatus;
 import com.google.devtools.build.lib.network.ConnectivityStatusProvider;
 import com.google.devtools.build.lib.network.NoOpConnectivityModule;
+import com.google.devtools.build.lib.packages.metrics.PackageMetricsModule;
 import com.google.devtools.build.lib.remote.util.TracingMetadataUtils;
 import com.google.devtools.build.lib.runtime.BlazeModule;
 import com.google.devtools.build.lib.runtime.BlazeRuntime;
@@ -87,6 +96,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
@@ -135,6 +145,7 @@ public final class BazelBuildEventServiceModuleTest extends BuildIntegrationTest
             })
         .addBlazeModule(new NoSpawnCacheModule())
         .addBlazeModule(new CredentialModule())
+        .addBlazeModule(new PackageMetricsModule())
         .addBlazeModule(
             new BazelBuildEventServiceModule() {
               @Override
@@ -966,6 +977,96 @@ project = project_pb2.Project.create(
     assertThat(options).contains("--//flag:my_flag=my_value");
   }
 
+  @Test
+  public void bzlMetrics(
+      @TestParameter boolean publishPackageMetrics, @TestParameter boolean recordAllPackageMetrics)
+      throws Exception {
+    // In bazel there are other bzl files loaded for repo rules, so just skip.
+    assume().that(AnalysisMock.get().isThisBazel()).isFalse();
+
+    long smallBzlSize = write("foo/small.bzl", "A = 1").getFileSize();
+    long bigBzlSize = write("foo/big.bzl", "B = 123456789").getFileSize();
+    write(
+        "foo/BUILD",
+        """
+        load(":small.bzl", "A")
+        load(":big.bzl", "B")
+        filegroup(name = "empty")
+        """);
+    File buildEventBinaryFile = tmpFolder.newFile();
+    addOptions(
+        "--build_event_binary_file=" + buildEventBinaryFile.getAbsolutePath(),
+        "--experimental_publish_package_metrics_in_bep=" + publishPackageMetrics,
+        "--record_metrics_for_all_packages=" + recordAllPackageMetrics,
+        "--log_top_n_packages=1");
+
+    buildTarget("//foo:empty");
+
+    BzlMetrics bzlMetrics = getBuildMetrics(buildEventBinaryFile).getBzlMetrics();
+
+    if (!publishPackageMetrics) {
+      assertThat(bzlMetrics).isEqualToDefaultInstance();
+      return;
+    }
+
+    BzlFileMetrics bigBzlMetrics =
+        BzlFileMetrics.newBuilder().setPath("foo/big.bzl").setSize(bigBzlSize).build();
+    BzlFileMetrics smallBzlMetrics =
+        BzlFileMetrics.newBuilder().setPath("foo/small.bzl").setSize(smallBzlSize).build();
+
+    if (recordAllPackageMetrics) {
+      assertThat(bzlMetrics.getBzlFileMetricsList())
+          .containsExactly(bigBzlMetrics, smallBzlMetrics);
+    } else {
+      assertThat(bzlMetrics.getBzlFileMetricsList()).containsExactly(bigBzlMetrics);
+    }
+    assertThat(bzlMetrics.getBzlFileCount()).isEqualTo(2);
+  }
+
+  @Test
+  public void starlarkProviderMetrics() throws Exception {
+    write(
+        "foo/defs.bzl",
+        """
+        A = provider()
+        B = provider(fields = ["x", "y"])
+
+        def _impl(ctx):
+          return [
+            A(some_field = "a"),
+            B(x = "x", y = "y"),
+            DefaultInfo(files = depset([])),
+          ]
+
+        my_rule = rule(implementation = _impl)
+        """);
+    write(
+        "foo/BUILD",
+        """
+        load(":defs.bzl", "my_rule")
+        my_rule(name = "example")
+        """);
+    File buildEventBinaryFile = tmpFolder.newFile();
+    addOptions(
+        "--build_event_binary_file=" + buildEventBinaryFile.getAbsolutePath(),
+        "--experimental_record_skyframe_metrics");
+
+    buildTarget("//foo:example");
+
+    ImmutableMap<String, StalarkProvider> starlarkProviderStats =
+        Maps.uniqueIndex(
+            getBuildMetrics(buildEventBinaryFile)
+                .getBuildGraphMetrics()
+                .getStarlarkProviderStats()
+                .getProvidersList(),
+            StalarkProvider::getName);
+    assertThat(starlarkProviderStats.keySet()).containsExactly("A", "B");
+    assertThat(starlarkProviderStats.get("A").getLocation()).startsWith("foo/defs.bzl:1");
+    assertThat(starlarkProviderStats.get("A").hasSchema()).isFalse();
+    assertThat(starlarkProviderStats.get("B").getLocation()).startsWith("foo/defs.bzl:2");
+    assertThat(starlarkProviderStats.get("B").getSchema().getFieldCount()).isEqualTo(2);
+  }
+
   private static final class DelayingCloseBufferedOutputStream extends BufferedOutputStream {
     private final Duration delay;
     private final AtomicBoolean closed = new AtomicBoolean(false);
@@ -986,5 +1087,17 @@ project = project_pb2.Project.create(
     public boolean isClosed() {
       return closed.get();
     }
+  }
+
+  private static BuildMetrics getBuildMetrics(File buildEventBinaryFile) throws IOException {
+    try (InputStream in = new FileInputStream(buildEventBinaryFile)) {
+      BuildEvent ev;
+      while ((ev = BuildEvent.parseDelimitedFrom(in)) != null) {
+        if (ev.hasBuildMetrics()) {
+          return ev.getBuildMetrics();
+        }
+      }
+    }
+    throw new NoSuchElementException();
   }
 }

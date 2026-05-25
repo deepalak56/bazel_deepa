@@ -71,17 +71,6 @@ public abstract class RemoteAnalysisCachingOptions extends OptionsBase {
   public abstract String getSerializedFrontierProfile();
 
   @Option(
-      name = "remote_analysis_json_log",
-      defaultValue = "null",
-      documentationCategory = OptionDocumentationCategory.LOGGING,
-      effectTags = {OptionEffectTag.BAZEL_MONITORING},
-      help =
-          "If set, a JSON file is written to this location that contains a detailed log of "
-              + "the behavior of remote analysis caching. It's interpreted as a path relative "
-              + "to the current working directory.")
-  public abstract String getJsonLog();
-
-  @Option(
       name = "experimental_remote_analysis_cache_mode",
       defaultValue = "off",
       documentationCategory = OptionDocumentationCategory.UNDOCUMENTED,
@@ -270,4 +259,12 @@ public abstract class RemoteAnalysisCachingOptions extends OptionsBase {
           "If true, bails out from remote analysis cache retrieval if a single fingerprint is"
               + " missing.")
   public abstract boolean getAnalysisCacheBailOnMissingFingerprint();
+
+  @Option(
+      name = "experimental_skycache_analysis_only",
+      defaultValue = "false",
+      documentationCategory = OptionDocumentationCategory.UNDOCUMENTED,
+      effectTags = {OptionEffectTag.BAZEL_INTERNAL_CONFIGURATION},
+      help = "If true, Skycache will only be used for analysis phase.")
+  public abstract boolean getSkycacheAnalysisOnly();
 }

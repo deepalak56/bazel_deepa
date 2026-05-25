@@ -123,16 +123,24 @@ public abstract sealed class Dict<K, V>
   Dict() {}
 
   @Override
-  public final StarlarkType getStarlarkType() {
+  public final StarlarkType getStarlarkType(StarlarkSemantics semantics) {
     // TODO(ilist@): store the type for non-homogeneous dicts
     // Current implementation traverses the dict and computes union of all elements - same as most
     // of the native calls. This is correct, but could be expensive.
-    return isEmpty()
-        ? Types.dict(Types.ANY, Types.ANY)
-        : Types.dict(
-            Types.union(keySet().stream().map(Starlark::getStarlarkType).collect(toImmutableSet())),
-            Types.union(
-                values().stream().map(Starlark::getStarlarkType).collect(toImmutableSet())));
+    if (isEmpty()) {
+      return mutability().isFrozen()
+          ? Types.dict(Types.NEVER, Types.NEVER)
+          : Types.dict(Types.ANY, Types.ANY);
+    }
+    return Types.dict(
+        Types.union(
+            keySet().stream()
+                .map(k -> Starlark.getStarlarkType(k, semantics))
+                .collect(toImmutableSet())),
+        Types.union(
+            values().stream()
+                .map(v -> Starlark.getStarlarkType(v, semantics))
+                .collect(toImmutableSet())));
   }
 
   /**
@@ -430,9 +438,7 @@ public abstract sealed class Dict<K, V>
     @CanIgnoreReturnValue
     public Builder<K, V> putAll(Map<? extends K, ? extends V> map) {
       items.ensureCapacity(items.size() + 2 * map.size());
-      for (Map.Entry<? extends K, ? extends V> e : map.entrySet()) {
-        put(e.getKey(), e.getValue());
-      }
+      map.forEach(this::put);
       return this;
     }
 
@@ -617,7 +623,7 @@ public abstract sealed class Dict<K, V>
   // TODO: jhorvitz - This should be private but bazel_bootstrap_distfile_test is not picking up
   //  https://bugs.openjdk.org/browse/JDK-8284011 for some reason.
   abstract static sealed class MapBackedDict<K, V> extends Dict<K, V> {
-    private final Map<K, V> contents;
+    private Map<K, V> contents;
 
     private MapBackedDict(Map<K, V> contents) {
       this.contents = Preconditions.checkNotNull(contents);
@@ -766,7 +772,7 @@ public abstract sealed class Dict<K, V>
   // CPU overhead of the bookkeeping and the CPU cost of the ImmutableMap#copyOf call cause
   // unacceptably increased CPU. In other words, the overall tradeoff is not obviously worth it in
   // all cases. So be careful making this optimization! See comment #12 of b/225469491 for details.
-  private static final class MutableDict<K, V> extends MapBackedDict<K, V> {
+  private static final class MutableDict<K, V> extends MapBackedDict<K, V> implements Compactable {
     // Number of active iterators (unused once frozen).
     private transient int iteratorCount; // transient for serialization by Bazel
 
@@ -802,6 +808,16 @@ public abstract sealed class Dict<K, V>
         iteratorCount--;
       }
       return iteratorCount > 0;
+    }
+
+    @Override
+    public StarlarkValue unsafeOptimizeMemoryLayout() {
+      Preconditions.checkState(mutability.isFrozen());
+      // The private field contents can only be accessed if the type is MapBackedDict
+      MapBackedDict<K, V> self = this;
+      CompactImmutableDict<K, V> compact = CompactImmutableDict.copyOf(self.contents);
+      self.contents = compact;
+      return compact;
     }
   }
 

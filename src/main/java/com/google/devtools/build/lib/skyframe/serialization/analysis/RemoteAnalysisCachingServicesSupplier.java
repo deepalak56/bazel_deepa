@@ -39,10 +39,7 @@ public interface RemoteAnalysisCachingServicesSupplier {
    * <p>This method updates the services and parameters when the relevant flags change.
    */
   default void configure(
-      RemoteAnalysisCachingOptions cachingOptions,
-      @Nullable ClientId clientId,
-      String buildId,
-      @Nullable RemoteAnalysisJsonLogWriter jsonLogWriter)
+      RemoteAnalysisCachingOptions cachingOptions, @Nullable ClientId clientId, String buildId)
       throws AbruptExitException {
     // Does nothing by default.
   }
@@ -75,8 +72,8 @@ public interface RemoteAnalysisCachingServicesSupplier {
     return null;
   }
 
-  /** Relinquishes any underlying resources. */
-  void shutdown();
+  /** Relinquishes any underlying resource that is scoped to the current command. */
+  void resetCommandState();
 
   /** Relinquishes any global, server-lifetime resources (like cached channels). */
   default void blazeShutdown() {}

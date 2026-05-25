@@ -60,7 +60,7 @@ public class RemoteAnalysisCacheDeps
   private final Optional<Predicate<PackageIdentifier>> activeDirectoriesMatcher;
   private final RemoteAnalysisCachingEventListener listener;
   private final FrontierNodeVersion frontierNodeVersion;
-  @Nullable private final RemoteAnalysisJsonLogWriter jsonLogWriter;
+  private final boolean skycacheAnalysisOnly;
 
   private final ListenableFuture<ObjectCodecs> objectCodecs;
   private final ListenableFuture<FingerprintValueService> fingerprintValueServiceFuture;
@@ -81,19 +81,18 @@ public class RemoteAnalysisCacheDeps
       boolean minimizeMemory,
       RemoteAnalysisCachingServicesSupplier servicesSupplier,
       RemoteAnalysisCachingEventListener listener,
-      RemoteAnalysisJsonLogWriter jsonLogWriter,
       ListenableFuture<ObjectCodecs> objectCodecs,
       FrontierNodeVersion frontierNodeVersion,
       Optional<Predicate<PackageIdentifier>> activeDirectoriesMatcher,
-      String serializedFrontierProfile) {
+      String serializedFrontierProfile,
+      boolean skycacheAnalysisOnly) {
     this.mode = mode;
     this.bailOutOnMissingFingerprint = bailOutOnMissingFingerprint;
+    this.skycacheAnalysisOnly = skycacheAnalysisOnly;
     this.minimizeMemory = minimizeMemory;
     this.serializedFrontierProfile = serializedFrontierProfile;
     this.activeDirectoriesMatcher = activeDirectoriesMatcher;
     this.eventHandler = eventHandler;
-
-    this.jsonLogWriter = jsonLogWriter;
 
     this.objectCodecs = objectCodecs;
     this.listener = listener;
@@ -109,10 +108,10 @@ public class RemoteAnalysisCacheDeps
     this.mode = RemoteAnalysisCacheMode.OFF;
     this.bailOutOnMissingFingerprint = false;
     this.minimizeMemory = false;
+    this.skycacheAnalysisOnly = false;
     this.serializedFrontierProfile = "";
     this.activeDirectoriesMatcher = Optional.empty();
     this.eventHandler = null;
-    this.jsonLogWriter = null;
     this.objectCodecs = null;
     this.listener = null;
     this.frontierNodeVersion = null;
@@ -204,13 +203,6 @@ public class RemoteAnalysisCacheDeps
     return resolveWithTimeout(metadataWriter, "metadata writer");
   }
 
-  @Nullable
-  @Override
-  public RemoteAnalysisJsonLogWriter getJsonLogWriter() {
-    checkEnabled();
-    return jsonLogWriter;
-  }
-
   @Override
   public void recordRetrievalResult(RetrievalResult retrievalResult, SkyKey key) {
     checkEnabled();
@@ -252,5 +244,11 @@ public class RemoteAnalysisCacheDeps
       throw new IllegalStateException(
           "At this point the Skycache client should have been initialized", e);
     }
+  }
+
+  @Override
+  public boolean getSkycacheAnalysisOnly() {
+    checkEnabled();
+    return skycacheAnalysisOnly;
   }
 }

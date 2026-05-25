@@ -51,7 +51,7 @@ public class SerializationModule extends BlazeModule {
   @Override
   public void commandComplete() {
     if (remoteAnalysisCachingServicesSupplier != null) {
-      remoteAnalysisCachingServicesSupplier.shutdown();
+      remoteAnalysisCachingServicesSupplier.resetCommandState();
     }
   }
 
@@ -92,8 +92,7 @@ public class SerializationModule extends BlazeModule {
             // TODO: b/358347099 - use a persistent store
             FingerprintValueStore.inMemoryStore(),
             new FingerprintValueCache(FingerprintValueCache.SyncMode.NOT_LINKED),
-            FingerprintValueService.NONPROD_FINGERPRINTER,
-            /* jsonLogWriter= */ null);
+            FingerprintValueService.NONPROD_FINGERPRINTER);
 
     private static final ListenableFuture<FingerprintValueService> WRAPPED_SERVICE_INSTANCE =
         immediateFuture(SERVICE_INSTANCE);
@@ -104,6 +103,6 @@ public class SerializationModule extends BlazeModule {
     }
 
     @Override
-    public void shutdown() {}
+    public void resetCommandState() {}
   }
 }
