@@ -25,7 +25,6 @@ import static java.lang.Math.min;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.flogger.GoogleLogger;
 import com.google.devtools.build.lib.actions.Action;
@@ -127,6 +126,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -335,7 +335,7 @@ public final class SkyframeActionExecutor {
     var buildRequestOptions = options.getOptions(BuildRequestOptions.class);
 
     // Start with a new map each build so there's no issue with internal resizing.
-    this.buildActionMap = Maps.newConcurrentMap();
+    this.buildActionMap = new ConcurrentHashMap<>();
     this.rewoundActions = Sets.newConcurrentHashSet();
     this.hadExecutionError.set(false);
     this.actionCacheChecker = checkNotNull(actionCacheChecker);
@@ -1042,6 +1042,10 @@ public final class SkyframeActionExecutor {
     private final ActionLookupData actionLookupData;
     @Nullable private final ActionExecutionStatusReporter statusReporter;
     private final ActionPostprocessing postprocessing;
+    // True if the action was successfully registered with the statusReporter.
+    // This ensures we only attempt to remove it during cleanup, avoiding
+    // "Action not present" exceptions if the action failed before registration.
+    private boolean statusReported = false;
 
     ActionRunner(
         Action action,
@@ -1099,6 +1103,7 @@ public final class SkyframeActionExecutor {
           ActionStartedEvent event = new ActionStartedEvent(action, actionStartTimeNanos);
           if (statusReporter != null) {
             statusReporter.updateStatus(event);
+            statusReported = true;
           }
           env.getListener().post(event);
           var rewoundActionSynchronizer = outputService.getRewoundActionSynchronizer();
@@ -1175,7 +1180,7 @@ public final class SkyframeActionExecutor {
 
     private void notifyActionCompletion(
         ExtendedEventHandler eventHandler, boolean postActionCompletionEvent) {
-      if (statusReporter != null) {
+      if (statusReporter != null && statusReported) {
         statusReporter.remove(action);
       }
       if (postActionCompletionEvent) {

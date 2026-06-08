@@ -32,7 +32,6 @@ import com.google.devtools.build.lib.actions.AbstractAction;
 import com.google.devtools.build.lib.actions.ActionEnvironment;
 import com.google.devtools.build.lib.actions.ActionExecutionContext;
 import com.google.devtools.build.lib.actions.ActionExecutionException;
-import com.google.devtools.build.lib.actions.ActionInput;
 import com.google.devtools.build.lib.actions.ActionKeyContext;
 import com.google.devtools.build.lib.actions.ActionOwner;
 import com.google.devtools.build.lib.actions.ActionResult;
@@ -55,6 +54,7 @@ import com.google.devtools.build.lib.actions.PathMapper;
 import com.google.devtools.build.lib.actions.ResourceSet;
 import com.google.devtools.build.lib.actions.SimpleSpawn;
 import com.google.devtools.build.lib.actions.Spawn;
+import com.google.devtools.build.lib.actions.SpawnInputs;
 import com.google.devtools.build.lib.actions.SpawnResult;
 import com.google.devtools.build.lib.actions.extra.CppCompileInfo;
 import com.google.devtools.build.lib.actions.extra.EnvironmentVariable;
@@ -167,6 +167,7 @@ public class CppCompileAction extends AbstractAction
 
   private final ImmutableMap<String, String> executionInfo;
   private final String actionName;
+  private final String progressMessagePrefix;
 
   private final FeatureConfiguration featureConfiguration;
 
@@ -236,6 +237,8 @@ public class CppCompileAction extends AbstractAction
    * @param additionalIncludeScanningRoots list of additional artifacts to include-scan
    * @param actionName a string giving the name of this action for the purpose of toolchain
    *     evaluation
+   * @param progressMessagePrefix a string describing this action for cases when the same action is
+   *     run on the same file.
    * @param cppSemantics C++ compilation semantics
    * @param builtInIncludeDirectories - list of toolchain-defined builtin include directories.
    */
@@ -264,6 +267,7 @@ public class CppCompileAction extends AbstractAction
       ImmutableList<Artifact> additionalIncludeScanningRoots,
       ImmutableMap<String, String> executionInfo,
       String actionName,
+      String progressMessagePrefix,
       boolean needsIncludeValidation,
       ImmutableList<PathFragment> builtInIncludeDirectories,
       @Nullable Artifact grepIncludes,
@@ -299,6 +303,7 @@ public class CppCompileAction extends AbstractAction
         buildCommandLine(coptsFilter, actionName, featureConfiguration, variables);
     this.executionInfo = executionInfo;
     this.actionName = actionName;
+    this.progressMessagePrefix = progressMessagePrefix;
     this.featureConfiguration = featureConfiguration;
     this.needsIncludeValidation = needsIncludeValidation;
     this.builtInIncludeDirectories = builtInIncludeDirectories;
@@ -355,6 +360,7 @@ public class CppCompileAction extends AbstractAction
       CompileCommandLine compileCommandLine,
       ImmutableMap<String, String> executionInfo,
       String actionName,
+      String progressMessagePrefix,
       FeatureConfiguration featureConfiguration,
       ImmutableList<PathFragment> builtInIncludeDirectories,
       NestedSet<Artifact> moduleFiles,
@@ -380,6 +386,7 @@ public class CppCompileAction extends AbstractAction
     this.compileCommandLine = compileCommandLine;
     this.executionInfo = executionInfo;
     this.actionName = actionName;
+    this.progressMessagePrefix = progressMessagePrefix;
     this.featureConfiguration = featureConfiguration;
     this.builtInIncludeDirectories = builtInIncludeDirectories;
     this.moduleFiles = moduleFiles;
@@ -1288,7 +1295,13 @@ public class CppCompileAction extends AbstractAction
 
   @Override
   protected String getRawProgressMessage() {
-    return switch (actionName) {
+    String separator = "";
+    if (!progressMessagePrefix.isEmpty()) {
+      separator = ": ";
+    }
+    return progressMessagePrefix
+        + separator
+        + switch (actionName) {
           case CppActionNames.CPP_HEADER_ANALYSIS -> "Header analysis for ";
           case CppActionNames.CPP_MODULE_DEPS_SCANNING -> "Deps scanning for ";
           default -> "Compiling ";
@@ -1708,16 +1721,15 @@ public class CppCompileAction extends AbstractAction
       throws ActionExecutionException {
     // Intentionally not adding {@link CppCompileAction#inputsForInvalidation}, those are not needed
     // for execution.
-    NestedSetBuilder<ActionInput> inputsBuilder =
-        NestedSetBuilder.<ActionInput>stableOrder().addTransitive(mandatorySpawnInputs);
-
-    if (discoversInputs()) {
-      inputsBuilder.addTransitive(getAdditionalInputs());
-    }
-    if (paramFileActionInput != null) {
-      inputsBuilder.add(paramFileActionInput);
-    }
-    NestedSet<ActionInput> inputs = inputsBuilder.build();
+    SpawnInputs inputs =
+        SpawnInputs.of(
+            mandatorySpawnInputs,
+            discoversInputs()
+                ? getAdditionalInputs()
+                : NestedSetBuilder.emptySet(Order.STABLE_ORDER),
+            paramFileActionInput == null
+                ? ImmutableList.of()
+                : ImmutableList.of(paramFileActionInput));
 
     ImmutableMap.Builder<String, String> executionInfo =
         ImmutableMap.<String, String>builder().putAll(getExecutionInfo());
@@ -1776,7 +1788,7 @@ public class CppCompileAction extends AbstractAction
                   enabledCppCompileResourcesEstimation(),
                   getMnemonic(),
                   OS.getCurrent(),
-                  inputs.memoizedFlattenAndGetSize()),
+                  inputs.flatten().size()),
           pathMapper);
     } catch (CommandLineExpansionException e) {
       String message =

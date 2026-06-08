@@ -24,7 +24,8 @@ import static com.google.devtools.build.lib.analysis.BaseRuleClasses.getTestRunt
 import static com.google.devtools.build.lib.packages.Attribute.attr;
 import static com.google.devtools.build.lib.packages.BuildType.LABEL;
 import static com.google.devtools.build.lib.packages.BuildType.LABEL_LIST;
-import static com.google.devtools.build.lib.packages.BuiltinRestriction.allowlistEntry;
+import static com.google.devtools.build.lib.packages.BuiltinRestriction.externalRepoAllowlistEntry;
+import static com.google.devtools.build.lib.packages.BuiltinRestriction.mainRepoAllowlistEntry;
 import static com.google.devtools.build.lib.packages.RuleClass.DEFAULT_TEST_RUNNER_EXEC_GROUP;
 import static com.google.devtools.build.lib.packages.RuleClass.DEFAULT_TEST_RUNNER_EXEC_GROUP_NAME;
 import static com.google.devtools.build.lib.packages.Type.BOOLEAN;
@@ -45,6 +46,7 @@ import com.google.devtools.build.lib.analysis.DormantDependency;
 import com.google.devtools.build.lib.analysis.PackageSpecificationProvider;
 import com.google.devtools.build.lib.analysis.RuleDefinitionEnvironment;
 import com.google.devtools.build.lib.analysis.TemplateVariableInfo;
+import com.google.devtools.build.lib.analysis.config.ConfigMatchingProvider;
 import com.google.devtools.build.lib.analysis.config.ExecutionTransitionFactory;
 import com.google.devtools.build.lib.analysis.config.StarlarkDefinedConfigTransition;
 import com.google.devtools.build.lib.analysis.config.ToolchainTypeRequirement;
@@ -75,7 +77,6 @@ import com.google.devtools.build.lib.packages.AttributeValueSource;
 import com.google.devtools.build.lib.packages.BuildSetting;
 import com.google.devtools.build.lib.packages.BuildType;
 import com.google.devtools.build.lib.packages.BuiltinRestriction;
-import com.google.devtools.build.lib.packages.BuiltinRestriction.AllowlistEntry;
 import com.google.devtools.build.lib.packages.BzlInitThreadContext;
 import com.google.devtools.build.lib.packages.ConfigurationFragmentPolicy.MissingFragmentPolicy;
 import com.google.devtools.build.lib.packages.DeclaredExecGroup;
@@ -183,6 +184,7 @@ public class StarlarkRuleClassFunctions implements StarlarkRuleFunctionsApi {
                   .value(ImmutableMap.of()))
           .add(
               attr(RuleClass.TARGET_COMPATIBLE_WITH_ATTR, LABEL_LIST)
+                  .mandatoryBuiltinProviders(ImmutableList.of(ConfigMatchingProvider.class))
                   .mandatoryProviders(ConstraintValueInfo.PROVIDER.id())
                   // This should be configurable to allow for complex types of restrictions.
                   .tool(
@@ -237,17 +239,17 @@ public class StarlarkRuleClassFunctions implements StarlarkRuleFunctionsApi {
                   .build())
           .build();
 
-  public static final ImmutableSet<AllowlistEntry> ALLOWLIST_RULE_EXTENSION_API =
-      ImmutableSet.of(
-          allowlistEntry("", "initializer_testing"),
-          allowlistEntry("", "extend_rule_testing"),
-          allowlistEntry("", "subrule_testing"));
+  public static final BuiltinRestriction.Allowlist ALLOWLIST_RULE_EXTENSION_API =
+      BuiltinRestriction.Allowlist.of(
+          mainRepoAllowlistEntry("initializer_testing"),
+          mainRepoAllowlistEntry("extend_rule_testing"),
+          mainRepoAllowlistEntry("subrule_testing"));
 
-  public static final ImmutableSet<AllowlistEntry> ALLOWLIST_RULE_EXTENSION_API_EXPERIMENTAL =
-      ImmutableSet.of(
-          allowlistEntry("", "initializer_testing/builtins"),
-          allowlistEntry("", "third_party/bazel_rules/rules_cc"),
-          allowlistEntry("rules_cc", ""));
+  public static final BuiltinRestriction.Allowlist ALLOWLIST_RULE_EXTENSION_API_EXPERIMENTAL =
+      BuiltinRestriction.Allowlist.of(
+          mainRepoAllowlistEntry("third_party/bazel_rules/rules_cc"),
+          mainRepoAllowlistEntry("initializer_testing/builtins"),
+          externalRepoAllowlistEntry("rules_cc", ""));
 
   private static final String COMMON_ATTRIBUTES_NAME = "common";
 
