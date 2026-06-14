@@ -13,6 +13,7 @@
 // limitations under the License.
 package com.google.devtools.build.lib.skyframe.serialization.analysis;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
@@ -188,10 +189,10 @@ public abstract class RemoteAnalysisCachingOptions extends OptionsBase {
   // Configuration Modes:
   // 1. Write Proxy: If --experimental_remote_analysis_write_proxy is set, all uploads go through
   //    the write proxy. --experimental_remote_analysis_cache_mode must be UPLOAD.
-  //    --experimental_analysis_cache_service and --experimental_remote_analysis_cache are ignored.
+  //    --experimental_analysis_cache_service is ignored.
   //
-  // 2. Read Proxy: If --experimental_analysis_cache_service is set but
-  //    --experimental_remote_analysis_cache is NOT set, downloads are proxied through the
+  // 2. Read Proxy: If --experimental_analysis_cache_service is set, downloads are proxied through
+  // the
   //    AnalysisCacheService. --experimental_remote_analysis_cache_mode must be DOWNLOAD.
 
   @Option(
@@ -267,4 +268,23 @@ public abstract class RemoteAnalysisCachingOptions extends OptionsBase {
       effectTags = {OptionEffectTag.BAZEL_INTERNAL_CONFIGURATION},
       help = "If true, Skycache will only be used for analysis phase.")
   public abstract boolean getSkycacheAnalysisOnly();
+
+  @Option(
+      name = "remote_analysis_cache_emit_bep_upload_events",
+      defaultValue = "false",
+      documentationCategory = OptionDocumentationCategory.UNDOCUMENTED,
+      effectTags = {OptionEffectTag.BAZEL_INTERNAL_CONFIGURATION},
+      help = "If true, Blaze will emit debug events for remote analysis caching.")
+  public abstract boolean getEmitBepUploadEvents();
+
+  @Option(
+      name = "remote_analysis_debug_entries",
+      defaultValue = "",
+      documentationCategory = OptionDocumentationCategory.UNDOCUMENTED,
+      effectTags = {OptionEffectTag.BAZEL_INTERNAL_CONFIGURATION},
+      help = "Path to a local file containing remote analysis cache entries for debugging.")
+  public abstract String getRemoteAnalysisDebugEntries();
+
+  @VisibleForTesting
+  public abstract void setRemoteAnalysisDebugEntries(String value);
 }
