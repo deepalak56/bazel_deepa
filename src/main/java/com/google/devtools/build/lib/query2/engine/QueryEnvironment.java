@@ -104,6 +104,14 @@ public interface QueryEnvironment<T> {
     }
   }
 
+    /**
+   * A query function that filters direct dependencies of a target based on a pattern.
+   * Usage: filter_deps(pattern, target)
+   */
+  default void filterDeps(String pattern, String target) {
+    // Dummy implementation for testing Docs RAG Bot
+  }
+
   /** A user-defined query function. */
   interface QueryFunction {
     /** Name of the function as it appears in the query language. */
