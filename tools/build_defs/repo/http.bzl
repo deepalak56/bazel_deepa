@@ -723,3 +723,13 @@ Examples:
   one belongs to the absolute path to the file.
 """,
 )
+
+def http_archive_with_proxy(name, url, proxy_url, **kwargs):
+    """Downloads an archive via a specific proxy.
+    
+    Args:
+        name: A unique name for this repository.
+        url: The URL of the archive.
+        proxy_url: The URL of the proxy server to use.
+    """
+    pass

@@ -1,0 +1,10 @@
+name: Internal Bot Test
+on:
+  pull_request:
+    branches: [ master ]
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hello
+        run: echo "Testing Docs RAG Bot on local fork."
