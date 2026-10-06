@@ -2,22 +2,17 @@ load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
 
 package(default_visibility = ["//visibility:public"])
 
-exports_files(["fastutil.proguard"])
-
 filegroup(
     name = "srcs",
     srcs = glob(["**"]) + [
         "//tools/allowlists:srcs",
         "//tools/android:srcs",
-        "//tools/aquery_differ:srcs",
         "//tools/bash:srcs",
         "//tools/build_defs:srcs",
         "//tools/build_rules:srcs",
         "//tools/buildstamp:srcs",
-        "//tools/compliance:srcs",
         "//tools/coverage:srcs",
         "//tools/cpp:srcs",
-        "//tools/ctexplain:srcs",
         "//tools/def_parser:srcs",
         "//tools/distributions:srcs",
         "//tools/genrule:srcs",
@@ -28,6 +23,7 @@ filegroup(
         "//tools/osx:srcs",
         "//tools/proto:srcs",
         "//tools/python:srcs",
+        "//tools/res:srcs",
         "//tools/sh:srcs",
         "//tools/test:srcs",
         "//tools/test/CoverageOutputGenerator/java/com/google/devtools/coverageoutputgenerator:srcs",
@@ -53,13 +49,13 @@ filegroup(
         "//tools/def_parser:srcs",
         "//tools/genrule:srcs",
         "//tools/java:embedded_tools",
-        "//tools/jdk:package-srcs",
-        "//tools/jdk:srcs",
+        "//tools/jdk:embedded_tools",
         "//tools/launcher:srcs",
         "//tools/objc:srcs",
         "//tools/osx:srcs",
         "//tools/proto:srcs",
         "//tools/python:embedded_tools",
+        "//tools/res:srcs",
         "//tools/sh:embedded_tools",
         "//tools/test:embedded_tools",
         "//tools/test/CoverageOutputGenerator/java/com/google/devtools/coverageoutputgenerator:embedded_tools",
@@ -79,6 +75,7 @@ filegroup(
         "//tools/jdk:bzl_srcs",
         "//tools/osx:bzl_srcs",
         "//tools/python:bzl_srcs",
+        "//tools/res:bzl_srcs",
         "//tools/sh:bzl_srcs",
         "//tools/test:bzl_srcs",
     ],

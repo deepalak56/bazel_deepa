@@ -25,6 +25,7 @@ filegroup(
         "//tools/jdk:bzl_srcs",
         "//tools/osx:bzl_srcs",
         "//tools/python:bzl_srcs",
+        "//tools/res:bzl_srcs",
         "//tools/sh:bzl_srcs",
         "//tools/test:bzl_srcs",
     ],
@@ -36,6 +37,10 @@ filegroup(
 # `--nofetch`) should include this target in their `bazel vendor` invocation:
 #
 #   bazel vendor //... @bazel_tools//tools:tools_for_bazel_subcommands
+#
+# `mod tidy` also evaluates all module extensions. To cover their dependencies,
+# vendor the full graph with `bazel vendor`; this includes these tools as well.
+# See https://bazel.build/external/vendor#vendor-tools-for-subcommands.
 #
 # See https://github.com/bazelbuild/bazel/issues/29222.
 filegroup(
