@@ -110,7 +110,9 @@ public abstract class StarlarkList<E> extends AbstractCollection<E>
     }
     return Types.list(
         Types.union(
-            stream().map(e -> Starlark.getStarlarkType(e, semantics)).collect(toImmutableSet())));
+            stream()
+                .map(e -> Starlark.getStarlarkTypePropagatingStackOverflow(e, semantics))
+                .collect(toImmutableSet())));
   }
 
   /**
@@ -216,7 +218,15 @@ public abstract class StarlarkList<E> extends AbstractCollection<E>
     return wrap(null, Arrays.copyOf(elems, elems.length, Object[].class));
   }
 
-  abstract Object[] elems();
+  /**
+   * Returns the underlying array of elements.
+   *
+   * <p>Callers must not modify the returned array, and only indices {@code 0} through {@code size()
+   * - 1} are valid.
+   */
+  // The backing array is returned directly to avoid copying overhead.
+  @SuppressWarnings("AvoidObjectArrays")
+  public abstract Object[] elems();
 
   /**
    * Returns a new {@code StarlarkList} that is the concatenation of two {@code StarlarkList}s. The
@@ -273,7 +283,8 @@ public abstract class StarlarkList<E> extends AbstractCollection<E>
     for (int i = 0; i < size; i++) {
       result = 31 * result + elems[i].hashCode();
     }
-    return 6047 + 4673 * result;
+    int h = 6047 + 4673 * result;
+    return h != 0 ? h : 1;
   }
 
   @Override
@@ -308,8 +319,10 @@ public abstract class StarlarkList<E> extends AbstractCollection<E>
 
   @Override
   public boolean containsKey(StarlarkSemantics semantics, Object key) throws EvalException {
-    for (Object elem : elems()) {
-      if (Starlark.checkedEquals(key, elem)) {
+    int size = size();
+    Object[] elems = elems();
+    for (int i = 0; i < size; i++) {
+      if (Starlark.checkedEquals(key, elems[i])) {
         return true;
       }
     }

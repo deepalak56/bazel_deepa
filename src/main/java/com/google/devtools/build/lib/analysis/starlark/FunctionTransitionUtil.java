@@ -585,8 +585,7 @@ public final class FunctionTransitionUtil {
     }
     OptionInfo optionInfo = optionInfoMap.get(optionName);
     FragmentOptions options = buildOptions.get(optionInfo.getOptionClass());
-    // Get the raw value to avoid the default handling for null values.
-    Object optionValue = optionInfo.getDefinition().getRawValue(options);
+    Object optionValue = optionInfo.getDefinition().getValue(options);
     // convert nulls here b/c ImmutableMap bans null values
     return Optional.of(optionValue == null ? Starlark.NONE : optionValue);
   }
@@ -704,6 +703,7 @@ public final class FunctionTransitionUtil {
         }
         try {
           OptionDefinition def = optionInfo.getDefinition();
+          Object defaultValue = def.getDefaultValue(null);
           // TODO(b/153867317): check for crashing options types in this logic.
           Object convertedValue;
           if (def.getType() == List.class && optionValue instanceof List<?> optionValueAsList) {
@@ -751,6 +751,8 @@ public final class FunctionTransitionUtil {
                 "'None' value not allowed for List-type option '%s'. Please use '[]' instead if"
                     + " trying to set option to empty value.",
                 optionName);
+          } else if (optionValue == null && defaultValue != null) {
+            convertedValue = defaultValue;
           } else if (optionValue == null || def.getType().isInstance(optionValue)) {
             convertedValue = optionValue;
           } else if (def.getType().equals(int.class) && optionValue instanceof Integer) {
@@ -765,7 +767,7 @@ public final class FunctionTransitionUtil {
             throw ValidationException.format("Invalid value type for option '%s'", optionName);
           }
 
-          Object oldValue = def.getRawValue(fromOptions.get(optionInfo.getOptionClass()));
+          Object oldValue = def.getValue(fromOptions.get(optionInfo.getOptionClass()));
           if (!Objects.equals(oldValue, convertedValue)) {
             if (toOptions == null) {
               toOptions = fromOptions.clone();

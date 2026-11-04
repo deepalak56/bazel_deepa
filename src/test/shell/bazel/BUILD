@@ -1069,18 +1069,6 @@ sh_test(
 )
 
 sh_test(
-    name = "cc_import_starlark_test",
-    size = "medium",
-    srcs = ["cc_import_starlark_test.sh"],
-    data = [
-        ":test-deps",
-        "//tools/build_defs/cc:cc_import.bzl",
-        "//tools/build_defs/cc/tests:cc_import_tests_files",
-    ],
-    tags = ["no_windows"],
-)
-
-sh_test(
     name = "bazel_docker_sandboxing_test",
     srcs = ["bazel_docker_sandboxing_test.sh"],
     data = [
@@ -1402,6 +1390,18 @@ sh_test(
         ":test-deps",
     ],
     tags = ["no_windows"],
+)
+
+sh_test(
+    name = "combine_distfiles_to_tar_test",
+    size = "small",
+    srcs = ["combine_distfiles_to_tar_test.sh"],
+    data = [
+        "//:srcs",
+        "//src/test/shell:bashunit",
+    ],
+    tags = ["no_windows"],
+    deps = ["@bazel_tools//tools/bash/runfiles"],
 )
 
 sh_test(

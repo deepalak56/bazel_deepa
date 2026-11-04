@@ -1,3 +1,43 @@
+## Release 7.7.2 (2026-10-23)
+
+```
+
+Release Notes:
+
+```
+
+## Release 7.7.2 (2026-10-22)
+
+```
+
+Release Notes:
+
+```
+
+## Release 9.3.1 (2026-10-20)
+
+```
+
+Release Notes:
+
+```
+
+## Release 8.8.2 (2026-10-20)
+
+```
+
+Release Notes:
+
+```
+
+## Release 9.3.0 (2026-10-07)
+
+```
+
+Release Notes:
+
+```
+
 ## Release 10.0.0-pre.20260916.5 (2026-10-02)
 
 ```

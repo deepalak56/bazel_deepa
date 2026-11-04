@@ -1,8 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
-load("@rules_cc//cc:cc_library.bzl", "cc_library")
-load("@rules_cc//cc:cc_test.bzl", "cc_test")
 load("@rules_java//java:defs.bzl", "java_import")
 load(":launcher_flag_alias.bzl", "launcher_flag_alias")
 
@@ -48,41 +46,6 @@ java_plugins_flag_alias(
 )
 
 alias(
-    name = "genclass",
-    actual = "@remote_java_tools//:GenClass",
-)
-
-alias(
-    name = "GenClass_deploy.jar",
-    actual = "@remote_java_tools//:GenClass",
-)
-
-alias(
-    name = "turbine_direct",
-    actual = "@remote_java_tools//:TurbineDirect",
-)
-
-alias(
-    name = "turbine_direct_binary_deploy.jar",
-    actual = "@remote_java_tools//:TurbineDirect",
-)
-
-alias(
-    name = "javabuilder",
-    actual = "@remote_java_tools//:JavaBuilder",
-)
-
-alias(
-    name = "JavaBuilder_deploy.jar",
-    actual = "@remote_java_tools//:JavaBuilder",
-)
-
-alias(
-    name = "vanillajavabuilder",
-    actual = "@remote_java_tools//:VanillaJavaBuilder",
-)
-
-alias(
     name = "JacocoCoverageRunner",
     actual = "@remote_java_tools//:jacoco_coverage_runner",
 )
@@ -100,21 +63,6 @@ java_import(
 alias(
     name = "TestRunner_deploy.jar",
     actual = "@remote_java_tools//:Runner",
-)
-
-alias(
-    name = "proguard",
-    actual = "@remote_java_tools//:proguard",
-)
-
-alias(
-    name = "jre",
-    actual = "@local_jdk//:jre",
-)
-
-alias(
-    name = "jdk",
-    actual = "@local_jdk//:jdk",
 )
 
 alias(
@@ -143,36 +91,9 @@ cc_binary(
     ],
 )
 
-cc_library(
-    name = "proguard_allowlister_test_lib",
-    testonly = 1,
-    srcs = [
-        "proguard_allowlister_lib.cc",
-        "proguard_allowlister_lib.h",
-        "proguard_allowlister_test_lib.cc",
-    ],
-    hdrs = ["proguard_allowlister_test_lib.h"],
-    deps = ["@rules_cc//cc/runfiles"],
-)
-
-cc_test(
-    name = "proguard_allowlister_test",
-    srcs = [
-        "proguard_allowlister_test.cc",
-    ],
-    data = ["proguard_allowlister_test_input.pgcfg"],
-    env = {
-        "TEST_INPUT": "$(rlocationpath :proguard_allowlister_test_input.pgcfg)",
-    },
-    deps = [
-        ":proguard_allowlister_test_lib",
-    ],
-)
-
 #### Aliases to rules_java to keep backward-compatibility (begin) ####
 
 TARGET_NAMES = [
-    "java_runtime_alias",
     "current_host_java_runtime",
     "current_java_runtime",
     "current_java_toolchain",

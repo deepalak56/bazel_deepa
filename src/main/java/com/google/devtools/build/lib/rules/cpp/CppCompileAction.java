@@ -62,6 +62,7 @@ import com.google.devtools.build.lib.actions.extra.ExtraActionInfo;
 import com.google.devtools.build.lib.analysis.actions.PathMappers;
 import com.google.devtools.build.lib.analysis.config.BuildConfigurationValue;
 import com.google.devtools.build.lib.analysis.config.CoreOptions.OutputPathsMode;
+import com.google.devtools.build.lib.analysis.platform.PlatformInfo;
 import com.google.devtools.build.lib.analysis.starlark.Args;
 import com.google.devtools.build.lib.bugreport.BugReport;
 import com.google.devtools.build.lib.cmdline.LabelConstants;
@@ -142,6 +143,7 @@ public class CppCompileAction extends AbstractAction
   private final NestedSet<Artifact> additionalPrunableHeaders;
 
   @Nullable private final Artifact grepIncludes;
+  @Nullable private final PlatformInfo grepIncludesExecutionPlatform;
   private final boolean shareable;
   private final boolean shouldScanIncludes;
   private final boolean usePic;
@@ -268,6 +270,7 @@ public class CppCompileAction extends AbstractAction
       boolean needsIncludeValidation,
       ImmutableList<PathFragment> builtInIncludeDirectories,
       @Nullable Artifact grepIncludes,
+      @Nullable PlatformInfo grepIncludesExecutionPlatform,
       ImmutableList<Artifact> additionalOutputs,
       NestedSet<Artifact> moduleFiles,
       Artifact modmapInputFile) {
@@ -307,6 +310,7 @@ public class CppCompileAction extends AbstractAction
     this.usedModules = null;
     this.topLevelModules = null;
     this.grepIncludes = grepIncludes;
+    this.grepIncludesExecutionPlatform = grepIncludesExecutionPlatform;
     this.dotdFile = isGenerateDotdFile(sourceFile) ? dotdFile : null;
 
     NestedSetBuilder<Artifact> allowedDerivedInputsBuilder =
@@ -346,6 +350,7 @@ public class CppCompileAction extends AbstractAction
       NestedSet<Artifact> allowedDerivedInputs,
       NestedSet<Artifact> additionalPrunableHeaders,
       @Nullable Artifact grepIncludes,
+      @Nullable PlatformInfo grepIncludesExecutionPlatform,
       boolean shareable,
       boolean shouldScanIncludes,
       boolean usePic,
@@ -372,6 +377,7 @@ public class CppCompileAction extends AbstractAction
     this.allowedDerivedInputs = allowedDerivedInputs;
     this.additionalPrunableHeaders = additionalPrunableHeaders;
     this.grepIncludes = grepIncludes;
+    this.grepIncludesExecutionPlatform = grepIncludesExecutionPlatform;
     this.shareable = shareable;
     this.shouldScanIncludes = shouldScanIncludes;
     this.usePic = usePic;
@@ -796,6 +802,11 @@ public class CppCompileAction extends AbstractAction
     return grepIncludes;
   }
 
+  @Nullable
+  public PlatformInfo getGrepIncludesExecutionPlatform() {
+    return grepIncludesExecutionPlatform;
+  }
+
   /**
    * Set by {@link #discoverInputs} or, when include scanning is disabled, in the constructor.
    * Returns an empty {@link NestedSet}, if this is not a compile action producing a C++ module.
@@ -1044,7 +1055,9 @@ public class CppCompileAction extends AbstractAction
     ParamFileInfo paramFileInfo = null;
     if (cppConfiguration().useArgsParamsFile()) {
       paramFileInfo =
-          ParamFileInfo.builder(ParameterFileType.GCC_QUOTED).setUseAlways(true).build();
+          ParamFileInfo.builder(getParameterFileType(featureConfiguration))
+              .setUseAlways(true)
+              .build();
     }
     CommandLineAndParamFileInfo commandLineAndParamFileInfo =
         new CommandLineAndParamFileInfo(commandLine, paramFileInfo);
@@ -1052,6 +1065,12 @@ public class CppCompileAction extends AbstractAction
     Args args = Args.forRegisteredAction(commandLineAndParamFileInfo, directoryInputs);
 
     return StarlarkList.immutableCopyOf(ImmutableList.of(args));
+  }
+
+  static ParameterFileType getParameterFileType(FeatureConfiguration featureConfiguration) {
+    return featureConfiguration.isEnabled(CppRuleClasses.WINDOWS_QUOTING_FOR_PARAM_FILES)
+        ? ParameterFileType.WINDOWS
+        : ParameterFileType.GCC_QUOTED;
   }
 
   @Override
@@ -1388,6 +1407,7 @@ public class CppCompileAction extends AbstractAction
         compileCommandLine.getEnvironment(PathMapper.NOOP),
         executionInfo,
         getCommandLineKey(),
+        getParameterFileType(featureConfiguration),
         ccCompilationContext.getDeclaredIncludeSrcs(),
         mandatoryInputs,
         mandatorySpawnInputs,
@@ -1406,6 +1426,7 @@ public class CppCompileAction extends AbstractAction
       Map<String, String> environmentVariables,
       Map<String, String> executionInfo,
       byte[] commandLineKey,
+      ParameterFileType parameterFileType,
       NestedSet<Artifact> declaredIncludeSrcs,
       NestedSet<Artifact> mandatoryInputs,
       NestedSet<Artifact> mandatorySpawnInputs,
@@ -1420,6 +1441,7 @@ public class CppCompileAction extends AbstractAction
     fp.addStringMap(environmentVariables);
     fp.addStringMap(executionInfo);
     fp.addBytes(commandLineKey);
+    fp.addString(parameterFileType.toString());
 
     actionKeyContext.addNestedSetToFingerprint(fp, declaredIncludeSrcs);
     fp.addInt(0); // mark the boundary between input types
@@ -1636,8 +1658,7 @@ public class CppCompileAction extends AbstractAction
               paramFilePath,
               paramFileArg,
               compilerOptions,
-              // TODO(b/132888308): Support MSVC, which has its own method of escaping strings.
-              ParameterFileType.GCC_QUOTED);
+              getParameterFileType(featureConfiguration));
       args =
           compileCommandLine.getArgumentsWithParameterFile(pathMapper, paramFileArg, paramFilePath);
     }
@@ -1976,6 +1997,7 @@ public class CppCompileAction extends AbstractAction
               includeScanningHeaderData
                   .setSystemIncludeDirs(getSystemIncludeDirs())
                   .setCmdlineIncludes(getCmdlineIncludes(getCompilerOptions()))
+                  .setIsValidUndeclaredHeader(getValidUndeclaredHeaderPredicate())
                   // Register generated prunable/toolchain headers as declared so the include
                   // scanner can resolve them; it never stats output-directory paths. Keep in sync
                   // with the matching call in discoverInputs above. See

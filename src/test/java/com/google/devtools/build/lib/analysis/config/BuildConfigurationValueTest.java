@@ -29,6 +29,7 @@ import com.google.devtools.build.lib.skyframe.serialization.testutils.Serializat
 import com.google.devtools.build.lib.testutil.TestConstants;
 import com.google.devtools.build.lib.vfs.FileSystem;
 import com.google.devtools.common.options.Options;
+import com.google.devtools.common.options.OptionsClass;
 import com.google.testing.junit.testparameterinjector.TestParameter;
 import com.google.testing.junit.testparameterinjector.TestParameterInjector;
 import org.junit.Test;
@@ -833,6 +834,18 @@ public final class BuildConfigurationValueTest extends ConfigurationTestCase {
   }
 
   @Test
+  public void testPlatformInOutputDir_legacy_withSlashInPlatformName() throws Exception {
+    scratch.file("platform/BUILD", "platform(name = 'alpha/beta')");
+    BuildConfigurationValue config =
+        create(
+            "--experimental_use_platforms_in_output_dir_legacy_heuristic",
+            "--platforms=//platform:alpha/beta");
+
+    assertThat(config.getOutputDirectory().getRoot().toString())
+        .matches(".*/[^/]+-out/alpha_beta-fastbuild");
+  }
+
+  @Test
   public void testPlatformInOutputDir_defaultPlatform() throws Exception {
     BuildConfigurationValue config =
         create(
@@ -897,6 +910,47 @@ public final class BuildConfigurationValueTest extends ConfigurationTestCase {
         .addEqualityGroup(createRaw(parseBuildOptions("--test_arg=3"), "arm"))
         .addEqualityGroup(createRaw(parseBuildOptions("--test_arg=3"), "risc"))
         .testEquals();
+  }
+
+  @Test
+  public void mnemonicDependsOnBaseline_stHash() throws Exception {
+    BuildOptions baseline = parseBuildOptions();
+    BuildOptions withDefine = parseBuildOptions("--define=a=b");
+    BuildOptions withOpt = parseBuildOptions("-c", "opt");
+
+    // Options equal to the baseline: no ST-hash.
+    assertThat(createConfigurationWithBaseline(withDefine, withDefine).mnemonicDependsOnBaseline())
+        .isFalse();
+    // A hashed option differs from the baseline: ST-hash.
+    assertThat(createConfigurationWithBaseline(baseline, withDefine).mnemonicDependsOnBaseline())
+        .isTrue();
+    // Only an explicit-in-output-path option differs: still no ST-hash.
+    assertThat(createConfigurationWithBaseline(baseline, withOpt).mnemonicDependsOnBaseline())
+        .isFalse();
+  }
+
+  /** Options that consult the baseline while contributing nothing to the mnemonic. */
+  @OptionsClass
+  public abstract static class BaselineConsultingOptions extends FragmentOptions {
+    @Override
+    public void processForOutputPathMnemonic(OutputDirectoriesContext ctx) {
+      var _ = ctx.getBaseline(CoreOptions.class);
+    }
+  }
+
+  @Test
+  public void mnemonicDependsOnBaseline_optionsConsultBaseline() throws Exception {
+    BuildOptions options =
+        parseBuildOptions().toBuilder()
+            .addFragmentOptions(Options.getDefaults(BaselineConsultingOptions.class))
+            .build();
+
+    OutputPathMnemonicComputer.Result result =
+        OutputPathMnemonicComputer.computeMnemonic(options, options);
+
+    // No ST-hash (options equal the baseline), yet the options looked at the baseline.
+    assertThat(result.mnemonic()).doesNotContain("ST-");
+    assertThat(result.dependsOnBaseline()).isTrue();
   }
 
   /**

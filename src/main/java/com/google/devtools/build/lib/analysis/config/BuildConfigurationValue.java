@@ -41,6 +41,7 @@ import com.google.devtools.build.lib.concurrent.BlazeInterners;
 import com.google.devtools.build.lib.events.Event;
 import com.google.devtools.build.lib.events.EventHandler;
 import com.google.devtools.build.lib.packages.BuiltinRestriction;
+import com.google.devtools.build.lib.packages.BuiltinRestriction.Allowlist;
 import com.google.devtools.build.lib.skyframe.config.BuildConfigurationKey;
 import com.google.devtools.build.lib.skyframe.serialization.autocodec.AutoCodec;
 import com.google.devtools.build.lib.starlarkbuildapi.BuildConfigurationApi;
@@ -52,6 +53,7 @@ import com.google.devtools.build.skyframe.SkyValue;
 import com.google.devtools.common.options.TriState;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -134,6 +136,12 @@ public class BuildConfigurationValue
    */
   private final String mnemonic;
 
+  /**
+   * Whether {@link #mnemonic} depends on the baseline options rather than being a pure function of
+   * {@link #buildOptions}.
+   */
+  private final boolean mnemonicDependsOnBaseline;
+
   private final ImmutableMap<String, String> commandLineBuildVariables;
 
   /** Data for introspecting the options used by this configuration. */
@@ -143,6 +151,9 @@ public class BuildConfigurationValue
 
   @Nullable // lazily initialized
   private transient volatile BuildConfigurationEvent buildEvent;
+
+  @Nullable // lazily initialized
+  private transient volatile BuildEventId buildEventId;
 
   /**
    * Validates the options for this BuildConfigurationValue. Issues warnings for the use of
@@ -181,14 +192,26 @@ public class BuildConfigurationValue
     }
     // Order doesn't matter here as ActionEnvironment sorts by key.
     Map<String, String> testEnv = new HashMap<>();
+    // Variables that are unset via --test_env==NAME are not only removed from the --test_env
+    // layer, but also from the default test environment set up by Bazel (e.g. HOME).
+    Set<String> unsetTestEnv = new HashSet<>();
     for (EnvVar envVar : buildOptions.get(TestOptions.class).getTestEnvironment()) {
       switch (envVar) {
-        case EnvVar.Set(String name, String value) -> testEnv.put(name, value);
-        case EnvVar.Inherit(String name) -> testEnv.put(name, null);
-        case EnvVar.Unset(String name) -> testEnv.remove(name);
+        case EnvVar.Set(String name, String value) -> {
+          testEnv.put(name, value);
+          unsetTestEnv.remove(name);
+        }
+        case EnvVar.Inherit(String name) -> {
+          testEnv.put(name, null);
+          unsetTestEnv.remove(name);
+        }
+        case EnvVar.Unset(String name) -> {
+          testEnv.remove(name);
+          unsetTestEnv.add(name);
+        }
       }
     }
-    return ActionEnvironment.split(testEnv);
+    return ActionEnvironment.split(testEnv, unsetTestEnv);
   }
 
   // Only BuildConfigurationFunction should instantiate this.
@@ -209,12 +232,13 @@ public class BuildConfigurationValue
     ImmutableSortedMap<Class<? extends Fragment>, Fragment> fragments =
         getConfigurationFragments(buildOptions, fragmentClasses, fragmentFactory);
 
-    String mnemonic =
-        OutputPathMnemonicComputer.computeMnemonic(buildOptions, baselineOptions, fragments);
+    OutputPathMnemonicComputer.Result mnemonic =
+        OutputPathMnemonicComputer.computeMnemonic(buildOptions, baselineOptions);
 
     return new BuildConfigurationValue(
         buildOptions,
-        mnemonic,
+        mnemonic.mnemonic(),
+        mnemonic.dependsOnBaseline(),
         platformCpu,
         globalProvider.getRunfilesPrefix(),
         directories,
@@ -246,6 +270,8 @@ public class BuildConfigurationValue
     return new BuildConfigurationValue(
         buildOptions,
         mnemonic,
+        // The mnemonic passed to createForTesting is taken at face value.
+        /* mnemonicDependsOnBaseline= */ false,
         "",
         globalProvider.getRunfilesPrefix(),
         directories,
@@ -272,6 +298,7 @@ public class BuildConfigurationValue
   BuildConfigurationValue(
       BuildOptions buildOptions,
       String mnemonic,
+      boolean mnemonicDependsOnBaseline,
       String platformCpu,
       // Arguments below this are either server-global and constant or completely dependent values.
       String workspaceName,
@@ -285,6 +312,7 @@ public class BuildConfigurationValue
     this.starlarkVisibleFragments = buildIndexOfStarlarkVisibleFragments();
     this.buildOptions = buildOptions;
     this.mnemonic = mnemonic;
+    this.mnemonicDependsOnBaseline = mnemonicDependsOnBaseline;
     this.options = buildOptions.get(CoreOptions.class);
     this.outputDirectories =
         new OutputDirectories(
@@ -334,12 +362,13 @@ public class BuildConfigurationValue
     // Only considering arguments that are non-dependent and non-server-global.
     return this.buildOptions.equals(otherVal.buildOptions)
         && this.workspaceName.equals(otherVal.workspaceName)
-        && this.mnemonic.equals(otherVal.mnemonic);
+        && this.mnemonic.equals(otherVal.mnemonic)
+        && Objects.equals(this.platformCpu, otherVal.platformCpu);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(buildOptions, workspaceName, mnemonic);
+    return Objects.hash(buildOptions, workspaceName, mnemonic, platformCpu);
   }
 
   private ImmutableMap<String, Class<? extends Fragment>> buildIndexOfStarlarkVisibleFragments() {
@@ -473,6 +502,21 @@ public class BuildConfigurationValue
     return outputDirectories.getMnemonic();
   }
 
+  /**
+   * Returns whether {@link #getMnemonic} depends on the baseline options used to construct this
+   * configuration, as opposed to being a pure function of {@link #getOptions}.
+   *
+   * <p>When false, two configurations with equal {@link BuildOptions} (built by the same Blaze
+   * release) are guaranteed to have equal mnemonics and thus equal output directories, so {@link
+   * BuildConfigurationKey} suffices to identify the output directory. When true, the mnemonic
+   * contains a segment (such as the starlark transition hash, {@code ST-<hash>}) whose presence or
+   * value varies with the baseline, and callers that need to distinguish output directories must
+   * additionally incorporate {@link #getMnemonic}.
+   */
+  public boolean mnemonicDependsOnBaseline() {
+    return mnemonicDependsOnBaseline;
+  }
+
   /** Returns whether to use automatic exec groups. */
   public boolean useAutoExecGroups() {
     return options.getUseAutoExecGroups();
@@ -495,7 +539,6 @@ public class BuildConfigurationValue
 
   @Override
   public void debugPrint(PrintStream out) {
-    out.printf("BuildConfigurationValue: %s\n", this.checksum());
     out.printf("  %s\n", this.options);
   }
 
@@ -617,9 +660,22 @@ public class BuildConfigurationValue
     return options.getStampBinaries();
   }
 
+  /**
+   * Allowlist for {@link #stampBinariesForStarlark}: a superset of the default allowlist.
+   *
+   * <p>Note that calling {@link #stampBinariesForStarlark} does not entail a dependency on {@link
+   * com.google.devtools.build.lib.skyframe.PrecomputedValue#STAMP_SETTING_MARKER}, so callers must
+   * be well-behaved (i.e., they should use the return value only to decide whether to add stamp
+   * file inputs, not to diverge other behavior). Consult the owners of b/419546090 prior to adding
+   * to this allowlist.
+   */
+  private static final Allowlist STAMP_BINARIES_ALLOWLIST =
+      Allowlist.defaultPlus(
+          BuiltinRestriction.mainRepoAllowlistEntry("tools/build_defs/gcl/internal"));
+
   @Override
   public boolean stampBinariesForStarlark(StarlarkThread thread) throws EvalException {
-    BuiltinRestriction.failIfCalledOutsideDefaultAllowlist(thread);
+    BuiltinRestriction.failIfCalledOutsideAllowlist(thread, STAMP_BINARIES_ALLOWLIST);
     return stampBinaries();
   }
 
@@ -668,6 +724,11 @@ public class BuildConfigurationValue
   @Override
   public CommandLineLimits getCommandLineLimits() {
     return commandLineLimits;
+  }
+
+  @Override
+  public CoreOptions.OutputPathsMode getOutputPathsMode() {
+    return options.getOutputPathsMode();
   }
 
   @Override
@@ -910,7 +971,14 @@ public class BuildConfigurationValue
   }
 
   public BuildEventId getEventId() {
-    return BuildEventIdUtil.configurationId(checksum());
+    if (buildEventId == null) {
+      synchronized (this) {
+        if (buildEventId == null) {
+          buildEventId = BuildEventIdUtil.configurationId(checksum());
+        }
+      }
+    }
+    return buildEventId;
   }
 
   @Override

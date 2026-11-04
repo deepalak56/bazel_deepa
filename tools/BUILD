@@ -2,6 +2,14 @@ load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
 
 package(default_visibility = ["//visibility:public"])
 
+exports_files(
+    [
+        "BUILD.tools",
+        "build_defs.bzl",
+    ],
+    visibility = ["//src/test/py/bazel:__pkg__"],
+)
+
 filegroup(
     name = "srcs",
     srcs = glob(["**"]) + [
@@ -10,8 +18,6 @@ filegroup(
         "//tools/bash:srcs",
         "//tools/build_defs:srcs",
         "//tools/build_rules:srcs",
-        "//tools/buildstamp:srcs",
-        "//tools/coverage:srcs",
         "//tools/cpp:srcs",
         "//tools/def_parser:srcs",
         "//tools/distributions:srcs",
@@ -38,19 +44,16 @@ filegroup(
     srcs = [
         "BUILD.tools",
         "build_defs.bzl",
-        "//tools/allowlists:srcs",
+        "//tools/allowlists:embedded_tools",
         "//tools/android:embedded_tools",
         "//tools/bash:embedded_tools",
         "//tools/build_defs:embedded_tools",
-        "//tools/build_rules:embedded_tools_srcs",
-        "//tools/buildstamp:srcs",
-        "//tools/coverage:srcs",
         "//tools/cpp:embedded_tools",
         "//tools/def_parser:srcs",
         "//tools/genrule:srcs",
         "//tools/java:embedded_tools",
         "//tools/jdk:embedded_tools",
-        "//tools/launcher:srcs",
+        "//tools/launcher:embedded_tools",
         "//tools/objc:srcs",
         "//tools/osx:srcs",
         "//tools/proto:srcs",
